@@ -1,8 +1,12 @@
 package pq.jdev.b001.bookstore.books.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -36,6 +42,9 @@ public class BookController {
 
 	@Autowired
 	private BookService bookService;
+
+	// @Autowired
+	// private BookDAO bookDAO;
 
 	@Autowired
 	private UserService userService;
@@ -290,6 +299,7 @@ public class BookController {
 				return "/bookview/error";
 			}
 			model.addAttribute("currentUser", currentUser);
+			dto.setBookId(editBook.getId());
 			dto.setTitle(editBook.getTitle());
 			dto.setPrice(editBook.getPrice());
 			dto.setDomain(editBook.getDomain());
@@ -480,8 +490,21 @@ public class BookController {
 			}
 			return "bookview/error";
 		}
-
 	}
+
+	@RequestMapping(value = { "/bookImage" }, method = RequestMethod.GET)
+   public void productImage(HttpServletRequest request, HttpServletResponse response, Model model,
+         @RequestParam("bookId") Long bookId) throws IOException {
+      Book book = null;
+      if (bookId != null) {
+		book = this.bookService.findBookByID(bookId);
+      }
+      if (book != null && book.getPicture() != null) {
+         response.setContentType("images/jpeg, images/jpg, images/png, images/gif");
+         response.getOutputStream().write(book.getPicture());
+      }
+      response.getOutputStream().close();
+   }
 
 	private boolean isUser(List<String> roles) {
 		if (roles.contains("ROLE_EMPLOYEE")) {

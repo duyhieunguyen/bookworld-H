@@ -2,6 +2,7 @@ package pq.jdev.b001.bookstore.books.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -108,33 +109,21 @@ public class BookServiceImpl implements BookService {
 			book.setPublishedYear(dto.getPublishedYear());
 			/** Set book.description */
 			book.setDescription(dto.getDescription());
-			/** Save book to get book.id */
-			Book dbBook = bookRepository.save(book);
-			/** Upload book's cover and set book.picture */
-			if (dbBook != null && !dto.getPictureFile().isEmpty()) {
+			/** Set book.picture */
+			if (dto.getPictureFile() != null) {
+				byte[] image = null;
 				try {
-					MultipartFile pictureFile = dto.getPictureFile();
-					if (pictureFile != null & StringUtils.hasText(pictureFile.getOriginalFilename())) {
-						String originalFileName = pictureFile.getOriginalFilename();
-						String modifiedFileName = dbBook.getId() + "_" + FilenameUtils.getBaseName(originalFileName)
-								+ "." + FilenameUtils.getExtension(originalFileName);
-						File storePictureFile = uploadPathService.getFilePath(modifiedFileName, "img/bookscover");
-						if (storePictureFile != null) {
-							try {
-								FileUtils.writeByteArrayToFile(storePictureFile, pictureFile.getBytes());
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-						dbBook.setPicture(modifiedFileName);
-						bookRepository.saveUpdatePicture(dbBook.getId(), modifiedFileName);
-					}
-				
-						
-				} catch (Exception e) {
-					e.printStackTrace();
+					image = dto.getPictureFile().getBytes();
+				} catch (IOException e) {
+				}
+				if (image != null && image.length > 0) {
+					book.setPicture(image);
 				}
 			}
+			
+			/** Save book to get book.id */
+			Book dbBook = bookRepository.save(book);
+			
 
 			/** Upload book's files and handle upload */
 			/** Set upload.uploadedDate */
@@ -283,29 +272,18 @@ public class BookServiceImpl implements BookService {
 			/** Update book.description */
 			bookRepository.saveUpdateDescription(bookid, dto.getDescription());
 			/** Update book.picture */
+
+			/** Set book.picture */
 			if (dto.getPictureFile() != null) {
+				byte[] image = null;
 				try {
-					MultipartFile pictureFile = dto.getPictureFile();
-					if (pictureFile != null & StringUtils.hasText(pictureFile.getOriginalFilename())) {
-						String originalFileName = pictureFile.getOriginalFilename();
-						String modifiedFileName = bookid + "_" + FilenameUtils.getBaseName(originalFileName) + "."
-								+ FilenameUtils.getExtension(originalFileName);
-						File storePictureFile = uploadPathService.getFilePath(modifiedFileName, "img/bookscover");
-						if (storePictureFile != null) {
-							try {
-								FileUtils.writeByteArrayToFile(storePictureFile, pictureFile.getBytes());
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-						bookRepository.saveUpdatePicture(bookid, modifiedFileName);
-					}
-						
-				} catch (Exception e) {
-					e.printStackTrace();
+					image = dto.getPictureFile().getBytes();
+				} catch (IOException e) {
+				}
+				if (image != null && image.length > 0) {
+					bookRepository.saveUpdatePicture(bookid, image);
 				}
 			}
-
 			/** Check if user upload files or not */
 			if (checkInput(dto)) {
 				/** Upload book's files and handle upload */
@@ -461,6 +439,11 @@ public class BookServiceImpl implements BookService {
 	public List<Book> findBookByCategories(Collection<Category> categories) {
 		return bookRepository.findByCategories(categories);
 	}
+
+	// @Override
+	// public Book findBook(Long bookId) {
+	// 	return bookRepository.findBook(bookId);
+	// }
 
 	@Override
 	public void changeCategory(long idTo, long idFrom) {

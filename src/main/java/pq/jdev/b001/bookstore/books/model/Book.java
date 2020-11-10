@@ -52,12 +52,9 @@ public class Book implements Serializable {
 	@Column(name = "DOMAIN", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin")
 	private String domain;
 
-	@Column(name = "PICTURE", columnDefinition = "VARCHAR(255)")
-	private String picture;
-
-	// @Lob
-	// @Column(name = "PICTURE")
-	// private byte[] picture;
+	@Lob
+	@Column(name = "PICTURE", length = Integer.MAX_VALUE, nullable = true)
+	private byte[] picture;
 
 	@Column(name = "UPLOADED_DATE")
 	private Date uploadedDate;
@@ -120,21 +117,13 @@ public class Book implements Serializable {
 		this.domain = domain;
 	}
 
-	// public byte[] getPicture() {
-	// 	return picture;
-	// }
-
-	// public void setPicture(byte[] picture) {
-	// 	this.picture = picture;
-	// }
-
-	public String getPicture() {
-		return picture;
-	}
-
-	public void setPicture(String picture) {
-		this.picture = picture;
-	}
+	public byte[] getPicture() {
+        return picture;
+    }
+ 
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
+    }
 
 	public Date getUploadedDate() {
 		return uploadedDate;

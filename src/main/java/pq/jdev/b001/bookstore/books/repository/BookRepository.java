@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import pq.jdev.b001.bookstore.books.model.Book;
 import pq.jdev.b001.bookstore.category.model.Category;
@@ -24,7 +25,7 @@ public interface BookRepository extends CrudRepository<Book, Long>, JpaRepositor
 
 	@Modifying
 	@Query("update Book book set book.picture =:picture where book.id =:bookid")
-	public void saveUpdatePicture(@Param("bookid") Long bookid, @Param("picture") String picture);
+	public void saveUpdatePicture(@Param("bookid") Long bookid, @Param("picture") byte[] picture);
 
 	@Modifying
 	@Query("update Book book set book.title =:title where book.id =:bookid")
@@ -76,4 +77,8 @@ public interface BookRepository extends CrudRepository<Book, Long>, JpaRepositor
 
 	@Query("SELECT b FROM Book b INNER JOIN b.categories c WHERE c IN (:categories)")
 	List<Book> findByCategories(@Param("categories") Collection<Category> categories);
+
+	@Query("SELECT e FROM Book e WHERE e.id =:bookId ")
+	public void findBook(@Param("bookId") Long bookId);
+
 }

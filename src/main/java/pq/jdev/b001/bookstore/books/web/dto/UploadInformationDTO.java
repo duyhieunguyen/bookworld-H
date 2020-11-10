@@ -14,6 +14,8 @@ import pq.jdev.b001.bookstore.publishers.model.Publishers;
 
 public class UploadInformationDTO {
 
+	private Long bookId;
+
 	@NotEmpty
 	private String title;
 
@@ -23,7 +25,6 @@ public class UploadInformationDTO {
 	@Nullable
 	private String domain;
 
-	@Nullable
 	private MultipartFile pictureFile;
 
 	private Date uploadedDate;
@@ -46,11 +47,19 @@ public class UploadInformationDTO {
 	@NotEmpty
 	private List<MultipartFile> files;
 
-	private MultipartFile folder;
+	private byte[] picture;
 
 	private List<SelectCategory> selectCategories;
 
 	private String description;
+
+	public Long getBookId() {
+        return bookId;
+    }
+ 
+    public void setBookId(Long bookId) {
+        this.bookId = bookId;
+    }
 
 
 	public String getTitle() {
@@ -84,6 +93,14 @@ public class UploadInformationDTO {
 	public void setPictureFile(MultipartFile pictureFile) {
 		this.pictureFile = pictureFile;
 	}
+
+	public byte[] getPicture() {
+        return picture;
+    }
+ 
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
+    }
 
 	public Date getUploadedDate() {
 		return uploadedDate;
@@ -147,14 +164,6 @@ public class UploadInformationDTO {
 
 	public void setFiles(List<MultipartFile> files) {
 		this.files = files;
-	}
-
-	public MultipartFile getFolder() {
-		return folder;
-	}
-
-	public void setFolder(MultipartFile folder) {
-		this.folder = folder;
 	}
 
 	public List<SelectCategory> getSelectCategories() {

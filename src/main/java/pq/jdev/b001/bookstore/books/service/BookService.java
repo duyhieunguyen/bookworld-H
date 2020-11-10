@@ -41,4 +41,6 @@ public interface BookService {
 	
 	public List<Book> findBookByCategories(Collection<Category> categories);
 
+	// Book findBook(Long bookId);
+
 }

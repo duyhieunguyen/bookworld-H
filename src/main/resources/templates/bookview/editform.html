@@ -143,12 +143,12 @@
 												<div class="form-group">
 													<label for="pictureFile" class="control-label">Book's
 														Cover</label>
-													<input id="pictureFile" name="pictureFile" class="form-control"
+													<input id="pictureFile" name="pictureFile" class="form-control" th:field="*{pictureFile}"
 														onchange="document.getElementById('output').src = window.URL.createObjectURL(this.files[0])"
 														accept=".jpeg, .jpg, .png, .gif, .tif, .tiff, .psd, .pdf, .eps, .ai, .indd, .raw, .bmp, .cr2, .nef, .orf, .sr2, .xcf, .cdr"
 														style="border-color: #6e6a6a; height:45px; font-weight: bold;"
-														type="file" th:value="${dto.pictureFile}">
-													<img id="output" src="" width="150" height="150">
+														type="file"  >
+													<img id="output" src="" width="150" height="150" th:src="@{|/bookImage?bookId=${dto.bookId}|}">
 												</div>
 
 												<div class="form-group">

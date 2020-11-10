@@ -127,9 +127,13 @@ img {
 								<div class="col-xs-12 col-sm-5 col-md-3">
 									<div class="post-thumbnail">
 										<div class="book-list-icon blue-icon"></div>
-										<img th:src="@{'/img/bookscover/'+${book.picture}}"
+										<!-- <img th:src="@{'/img/bookscover/'+${book.picture}}"
 										th:if="${book.picture != null}" style="width: 355px; height: 266px;" alt="Book Image" />
 										 <img th:src="@{/images/lol1.gif}" th:if="${book.picture == null}"
+										style="width: 355px; height: 266px;" /> -->
+
+										<img th:src="@{|/bookImage?bookId=${book.id}|}" style="width: 285px; height: 431px;" th:if="${book.picture != null}" />
+										<img th:src="@{/images/lol1.gif}" th:if="${book.picture == null}"
 										style="width: 355px; height: 266px;" />
 									</div>
 								</div>

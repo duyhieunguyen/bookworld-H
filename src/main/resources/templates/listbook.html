@@ -141,9 +141,10 @@
                     <ul class="category-list">
                         <li class="category-item abc" th:each="contactB,iterStat : ${books.pageList}">
                             <figure>
-                                <img th:src="@{'/img/bookscover/'+${contactB.picture}}" th:if="${contactB.picture != null}"
-                                    style="width: 355px; height: 266px;" alt="New Releaase" />
-                                <img th:src="@{/images/lol1.gif}" th:if="${contactB.picture == null}"
+                                <!-- <img th:src="@{'/img/bookscover/'+${contactB.picture}}" th:if="${contactB.picture != null}"
+                                    style="width: 355px; height: 266px;" alt="New Releaase" /> -->
+                                    <img th:src="@{|/bookImage?bookId=${contactB.id}|}" style="width: 355px; height: 266px;" th:if="${contactB.picture != null}" />
+                                    <img th:src="@{/images/lol1.gif}" th:if="${contactB.picture == null}"
                                     style="width: 355px; height: 266px;" />
                                 <!-- <img th:src="*{'data:image/jpg;base64,'+ book.getPicture()}" alt="#" /> -->
 
