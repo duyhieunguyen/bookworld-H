@@ -143,9 +143,9 @@
                             <figure>
                                 <!-- <img th:src="@{'/img/bookscover/'+${contactB.picture}}" th:if="${contactB.picture != null}"
                                     style="width: 355px; height: 266px;" alt="New Releaase" /> -->
-                                    <img th:src="@{|/bookImage?bookId=${contactB.id}|}" style="width: 355px; height: 266px;" th:if="${contactB.picture != null}" />
+                                    <img th:src="@{|/bookImage?bookId=${contactB.id}|}" style="width: 475px; height: 356px;" th:if="${contactB.picture != null}" />
                                     <img th:src="@{/images/lol1.gif}" th:if="${contactB.picture == null}"
-                                    style="width: 355px; height: 266px;" />
+                                    style="width: 475px; height: 356px;" />
                                 <!-- <img th:src="*{'data:image/jpg;base64,'+ book.getPicture()}" alt="#" /> -->
 
                                 <figcaption class="bg-orange">
@@ -153,7 +153,7 @@
                                         <h4><span th:text="${contactB.title}" th:title="${contactB.title}"></span></h4>
                                         <span class="author"><strong>Author:</strong> <span th:text="${contactB.authors}"
                                                 th:title="${contactB.authors}"></span></span>
-                                        <span class="author"><strong>Price:</strong><span th:text="${contactB.price}"
+                                        <span class="author"><strong>Price:</strong><span th:text="' $'+${contactB.price}"
                                                 th:title="${contactB.price}"></span> </span>
                                         <div class="rating">
                                             <span>☆</span>

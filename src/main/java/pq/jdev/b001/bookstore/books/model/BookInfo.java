@@ -6,6 +6,9 @@ public class BookInfo {
     private String author;
     private Long price;
 
+    public BookInfo() {
+    }
+
     public BookInfo(Book book) {
         this.bookId = book.getId();
         this.title = book.getTitle();

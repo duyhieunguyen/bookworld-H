@@ -11,6 +11,7 @@ import pq.jdev.b001.bookstore.cart.model.CartInfo;
 import pq.jdev.b001.bookstore.cart.model.CustomerInfo;
 import pq.jdev.b001.bookstore.cart.service.CartService;
 import pq.jdev.b001.bookstore.cart.utils.Utils;
+import pq.jdev.b001.bookstore.cart.validator.CustomerDTOValidator;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 
+
 @Controller
 public class CartController {
     
@@ -41,6 +43,31 @@ public class CartController {
 
    @Autowired
    private BookService bookService;
+
+   @Autowired
+   private CustomerDTOValidator customerDTOValidator;
+
+   @InitBinder
+   public void myInitBinder(WebDataBinder dataBinder) {
+      Object target = dataBinder.getTarget();
+      if (target == null) {
+         return;
+      }
+      System.out.println("Target=" + target);
+ 
+      // Case update quantity in cart
+      // (@ModelAttribute("cartForm") @Validated CartInfo cartForm)
+      if (target.getClass() == CartInfo.class) {
+ 
+      }
+ 
+      // Case save customer information.
+      // (@ModelAttribute @Validated CustomerInfo customerForm)
+      else if (target.getClass() == CustomerDTO.class) {
+         dataBinder.setValidator(customerDTOValidator);
+      }
+ 
+   }
 
    @RequestMapping({ "/buyBook" })
    public String listProductHandler(HttpServletRequest request, Model model, Authentication authentication, ModelMap map, //
@@ -159,9 +186,9 @@ public class CartController {
        return "shoppingCart";
     }
   
-    // GET: Enter customer information.
-    @RequestMapping(value = { "/shoppingCartCustomer" }, method = RequestMethod.GET)
-    public String shoppingCartCustomerForm(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
+   // GET: Enter customer information.
+   @RequestMapping(value = { "/checkout" }, method = RequestMethod.GET)
+   public String shoppingCartCustomerForm(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
 
       if (authentication != null) {
          Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -180,24 +207,25 @@ public class CartController {
          map.addAttribute("header", "header_login");
          map.addAttribute("footer", "footer_login");
       }
-  
-       CartInfo cartInfo = Utils.getCartInSession(request);
-  
-       if (cartInfo.isEmpty()) {
-  
-          return "redirect:/shoppingCart";
-       }
-       CustomerInfo customerInfo = cartInfo.getCustomerInfo();
-  
-       CustomerDTO customerDTO = new CustomerDTO(customerInfo);
-  
-       model.addAttribute("customerDTO", customerDTO);
-  
-       return "shoppingCartCustomer";
-    }
+
+      CartInfo cartInfo = Utils.getCartInSession(request);
+
+      if (cartInfo.isEmpty()) {
+
+         return "redirect:/shoppingCart";
+      }
+      CustomerInfo customerInfo = cartInfo.getCustomerInfo();
+
+      CustomerDTO customerDTO = new CustomerDTO(customerInfo);
+
+      model.addAttribute("customerDTO", customerDTO);
+      model.addAttribute("myCart", cartInfo);
+
+      return "checkout";
+   }
 
     // POST: Save customer information.
-   @RequestMapping(value = { "/shoppingCartCustomer" }, method = RequestMethod.POST)
+   @RequestMapping(value = { "/checkout" }, method = RequestMethod.POST)
    public String shoppingCartCustomerSave(HttpServletRequest request, Authentication authentication, ModelMap map, //
          Model model, //
          @ModelAttribute("customerDTO") @Validated CustomerDTO customerForm, //
@@ -225,7 +253,7 @@ public class CartController {
       if (result.hasErrors()) {
          customerForm.setValid(false);
          // Forward to reenter customer info.
-         return "shoppingCartCustomer";
+         return "checkout";
       }
  
       customerForm.setValid(true);
@@ -233,11 +261,11 @@ public class CartController {
       CustomerInfo customerInfo = new CustomerInfo(customerForm);
       cartInfo.setCustomerInfo(customerInfo);
  
-      return "redirect:/shoppingCartConfirmation";
+      return "redirect:/checkoutComfirmation";
    }
  
    // GET: Show information to confirm.
-   @RequestMapping(value = { "/shoppingCartConfirmation" }, method = RequestMethod.GET)
+   @RequestMapping(value = { "/checkoutComfirmation" }, method = RequestMethod.GET)
    public String shoppingCartConfirmationReview(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
 
       if (authentication != null) {
@@ -264,15 +292,15 @@ public class CartController {
          return "redirect:/shoppingCart";
       } else if (!cartInfo.isValidCustomer()) {
  
-         return "redirect:/shoppingCartCustomer";
+         return "redirect:/checkout";
       }
       model.addAttribute("myCart", cartInfo);
  
-      return "shoppingCartConfirmation";
+      return "checkoutComfirmation";
    }
  
    // POST: Submit Cart (Save)
-   @RequestMapping(value = { "/shoppingCartConfirmation" }, method = RequestMethod.POST)
+   @RequestMapping(value = { "/checkoutComfirmation" }, method = RequestMethod.POST)
  
    public String shoppingCartConfirmationSave(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
       if (authentication != null) {
@@ -300,13 +328,13 @@ public class CartController {
          return "redirect:/shoppingCart";
       } else if (!cartInfo.isValidCustomer()) {
  
-         return "redirect:/shoppingCartCustomer";
+         return "redirect:/checkout";
       }
       try {
          cartService.saveOrder(cartInfo);
       } catch (Exception e) {
  
-         return "shoppingCartConfirmation";
+         return "checkoutComfirmation";
       }
  
       // Remove Cart from Session.
@@ -347,6 +375,8 @@ public class CartController {
       model.addAttribute("lastOrderedCart", lastOrderedCart);
       return "shoppingCartFinalize";
    }
+
+
 
 
 //    @RequestMapping(value = { "/bookImage" }, method = RequestMethod.GET)

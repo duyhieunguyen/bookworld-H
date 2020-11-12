@@ -3,7 +3,7 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>CHECKOUT</title>
+	<title>CHECKOUT COMFIRM</title>
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
 
@@ -49,7 +49,7 @@
 	<section class="page-banner services-banner">
 		<div class="container">
 			<div class="banner-header">
-				<h2>Checkout</h2>
+				<h2>CHECKOUT COMFIRM</h2>
 				<span class="underline center"></span>
 
 			</div>
@@ -57,7 +57,8 @@
 				<ul>
                     <li><a th:href="@{/}">Home</a></li>
                     <li><a th:href="@{/shoppingCart}">My Cart</a></li>
-					<li>Checkout</li>
+                    <li><a th:href="@{/checkout}">Checkout</a></li>
+					<li>Checkout Comfirm</li>
 				</ul>
 			</div>
 		</div>
@@ -70,58 +71,36 @@
                 <div class="checkout-main">
                     <div class="container">
                         <div class="row">
-                           
+                            
                             <div class="col-md-12">
                                 <article class="page type-page status-publish hentry">
                                     <div class="entry-content">
                                         <div class="woocommerce">
                                             <form method="POST" th:object = "${customerDTO}" th:action="@{/checkout}" class="checkout woocommerce-checkout" name="checkout">
                                                 <div class="row">
-                                                    <div class="col-sm-8">
-                                                        <h2>Contact Information</h2>
+                                                    <div class="col-sm-7">
+                                                        <h2>Customer Information</h2>
                                                         <span class="underline left"></span>
                                                         <div class="woocommerce-info">
                                                             <div class="col-sm-12">
-                                                               
-                                                                <label>
-                                                                    <span class="first-letter">Name</span>  
-                                                                    <span class="second-letter">*</span>
-                                                                </label>
-                                                                <input type="text" value="" th:field="*{name}" class="input-text">
-                                                                <span class="error-message" style="color:red;"
-                                                                th:if="${#fields.hasErrors('name')}" th:errors="*{name}">..</span>
-                                                            
-                                                                </br>
-                                                                <label>
-                                                                    <span class="first-letter">Email Address</span>  
-                                                                    <span class="second-letter">*</span>
-                                                                </label>
-                                                                <input type="text" value="" th:field="*{email}" class="input-text">
-                                                                <span class="error-message" style="color:red;"
-                                                                th:if="${#fields.hasErrors('email')}" th:errors="*{email}">..</span>
-                                                                </br>
-                                                            
-                                                                <label>
-                                                                    <span class="first-letter">Phone</span>  
-                                                                    <span class="second-letter">*</span>
-                                                                </label>
-                                                                <input type="text" value="" th:field="*{phone}" class="input-text">
-                                                                <span class="error-message" style="color:red;"
-                                                                th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">..</span>
-                                                            
-                                                              </br>
-                                                                <label>
-                                                                    <span class="first-letter">Address</span>  
-                                                                    <span class="second-letter">*</span>
-                                                                </label>
-                                                                <input type="text" value="" th:field="*{address}" class="input-text">
-                                                                <span class="error-message" style="color:red;"
-                                                                th:if="${#fields.hasErrors('address')}" th:errors="*{address}">..</span>
-                                                               
-                                                                </br>  
-                                                                </br>  
-                                                                <input type="submit" class="btn btn-default" name="" value="Comfirm">
-                                                                <!-- <input type="reset" class="btn btn-default" name="" value="Reset"> -->
+                                                                <h3>Name:<span th:utext="' ' + ${myCart.customerInfo.name}"></span></h3>
+                                                                <h3>Email:<span  th:utext="' ' + ${myCart.customerInfo.email}"></span></h3>
+                                                                <h3>Phone:<span  th:utext="' ' + ${myCart.customerInfo.phone}"></span></h3>  
+                                                                <h3>Address:<span  th:utext="' ' + ${myCart.customerInfo.address}"></span></h3>       
+                                                                         
+                                                                <form method="POST" th:action="@{/checkoutComfirmation}">   
+                                                                      <!-- Edit Cart -->
+                                                                    <a class="btn btn-default" th:href="@{/shoppingCart}">
+                                                                        Edit Cart
+                                                                    </a>
+                                                                    <!-- Edit Customer Info -->
+                                                                    <a class="btn btn-default" th:href="@{/checkout}">
+                                                                        Edit Customer
+                                                                    </a>
+                                                                    
+                                                                    <!-- Send/Save -->
+                                                                    <input type="submit" value="Payment" class="btn btn-default" />
+                                                            </form>
                                                             </div>
                                                             <!-- <div class="col-sm-5">
                                                                 <h3>Create New Account</h3>
@@ -137,7 +116,7 @@
                                                             <div class="clearfix"></div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-4">
+                                                    <div class="col-sm-5">
                                                         <h2>Your order</h2>
                                                         <span class="underline left"></span>
                                                         <div class="woocommerce-checkout-review-order" id="order_review">
