@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import pq.jdev.b001.bookstore.books.model.Book;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.category.service.CategoryService;
 import pq.jdev.b001.bookstore.listbooks.service.ListBookService;
@@ -121,6 +123,10 @@ public class LoginController {
 			map.addAttribute("footer", "footer_login");
 			map.addAttribute("ok", "FALSE");
 		}
+
+		CartInfo myCart = Utils.getCartInSession(request);
+  
+		model.addAttribute("cartForm", myCart);
 		return "indexcontainer";
 	}
 

@@ -67,51 +67,33 @@
                                                     <div class="header-cart dropdown">
                                                         <a data-toggle="dropdown" class="dropdown-toggle" th:href="@{/shoppingCart}">
                                                             <i class="fa fa-shopping-cart"></i>
-                                                            <small>0</small>
+                                                            <small th:utext="${cartForm.quantityTotal}"></small>
                                                         </a>
                                                         <div class="dropdown-menu cart-dropdown">
                                                             <ul>
-                                                                <li class="clearfix">
-                                                                    <img th:src="@{/images/header-cart-image-01.jpg}" alt="cart item" />
+                                                                <li class="clearfix" th:each="cartLineInfo, varStatus : ${cartForm.cartLines}">
+                                                                    <input type="hidden"      
+                                                                    th:name="|cartLines[${varStatus.index}].bookInfo.bookId|"                       
+                                                                    th:value="${cartLineInfo.bookInfo.bookId}" />
+                                                                    <img th:src="@{|/bookImage?bookId=${cartLineInfo.bookInfo.bookId}|}" width=64 height=80 alt="cart item" />
                                                                     <div class="item-info">
                                                                         <div class="name">
-                                                                            <a href="#">The Great Gatsby</a>
+                                                                            <a><strong th:utext="${cartLineInfo.bookInfo.title}"></strong></a>
                                                                         </div>
-                                                                        <div class="author"><strong>Author:</strong> F. Scott Fitzgerald</div>
-                                                                        <div class="price">1 X $10.00</div>
+                                                                        <div class="author"><strong th:utext="'Author: '+${cartLineInfo.bookInfo.author}"></strong> </div>
+                                                                        <div class="price"><strong></strong><em th:utext="'Price: $'+ ${#numbers.formatDecimal(cartLineInfo.bookInfo.price,3,2,'COMMA')} + ' x ' + ${cartLineInfo.quantity}"></em></div>
                                                                     </div>
-                                                                    <a class="remove" href="#"><i class="fa fa-trash-o"></i></a>
-                                                                </li>
-                                                                <li class="clearfix">
-                                                                    <img th:src="@{/images/header-cart-image-02.jpg}" alt="cart item" />
-                                                                    <div class="item-info">
-                                                                        <div class="name">
-                                                                            <a href="#">The Great Gatsby</a>
-                                                                        </div>
-                                                                        <div class="author"><strong>Author:</strong> F. Scott Fitzgerald</div>
-                                                                        <div class="price">1 X $10.00</div>
-                                                                    </div>
-                                                                    <a class="remove" href="#"><i class="fa fa-trash-o"></i></a>
-                                                                </li>
-                                                                <li class="clearfix">
-                                                                    <img th:src="@{/images/header-cart-image-03.jpg}" alt="cart item" />
-                                                                    <div class="item-info">
-                                                                        <div class="name">
-                                                                            <a href="#">The Great Gatsby</a>
-                                                                        </div>
-                                                                        <div class="author"><strong>Author:</strong> F. Scott Fitzgerald</div>
-                                                                        <div class="price">1 X $10.00</div>
-                                                                    </div>
-                                                                    <a class="remove" href="#"><i class="fa fa-trash-o"></i></a>
+                                                                    <a class="remove" th:href="@{|/shoppingCartRemoveBook?bookId=${cartLineInfo.BookInfo.bookId}|}"><i class="fa fa-trash-o"></i></a>
                                                                 </li>
                                                             </ul>
                                                             <div class="cart-total">
+                                                              
                                                                 <div class="title">SubTotal</div>
-                                                                <div class="price">$30.00</div>
+                                                                <div class="price"><strong th:utext="'$' + ${#numbers.formatDecimal(cartForm.amountTotal,3,2,'COMMA')}"></strong></div>
                                                             </div>
                                                             <div class="cart-buttons">
-                                                                <a href="cart.html" class="btn btn-dark-gray">View Cart</a>
-                                                                <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                                                <a th:href="@{/shoppingCart}" class="btn btn-dark-gray">View Cart</a>
+                                                                <a th:href="@{/checkout}" class="btn btn-primary">Checkout</a>
                                                             </div>
                                                         </div>
                                                     </div>

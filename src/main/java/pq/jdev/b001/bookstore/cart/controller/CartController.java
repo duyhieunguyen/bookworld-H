@@ -220,6 +220,7 @@ public class CartController {
 
       model.addAttribute("customerDTO", customerDTO);
       model.addAttribute("myCart", cartInfo);
+      model.addAttribute("cartForm", cartInfo);
 
       return "checkout";
    }
