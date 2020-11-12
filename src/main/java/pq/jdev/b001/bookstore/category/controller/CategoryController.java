@@ -17,6 +17,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.category.service.CategoryService;
 import pq.jdev.b001.bookstore.publishers.model.Publishers;
@@ -68,6 +70,10 @@ public class CategoryController {
 		Timestamp ts = new Timestamp(time);
 		map.addAttribute("cd", ts);
 		map.addAttribute("ud", ts);
+
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 
 		return "categoryadd";
 	}

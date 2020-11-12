@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.category.service.CategoryService;
 import pq.jdev.b001.bookstore.publishers.model.Publishers;
@@ -159,6 +161,10 @@ public class AdminController {
 		} 
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
+
+		CartInfo cartInfo = Utils.getCartInSession(request);
+		model.addAttribute("myCart", cartInfo);
+		model.addAttribute("cartForm", cartInfo);
 		
 		return "listUser";
 	}
@@ -166,10 +172,15 @@ public class AdminController {
 	// update user
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping(value = "/edit-user-{id}")
-	public String showUpdateInfoForm(Model model, ModelMap map, Principal principal, @PathVariable long id) {
+	public String showUpdateInfoForm(Model model, ModelMap map, Principal principal, @PathVariable long id, HttpServletRequest request) {
 
 		map.addAttribute("header", "header_admin");
 		map.addAttribute("footer", "footer_admin");
+
+		CartInfo myCart = Utils.getCartInSession(request);
+  
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		List<Person> list = getList(principal);
 		for (Person p : list)
 			if (p.getId() == id) {
@@ -181,12 +192,15 @@ public class AdminController {
 
 	@PostMapping(value = "/edit-user-{id}")
 	public String updateUserAccount(@PathVariable long id, Model model, Principal principal,
-			@ModelAttribute("person") @Valid AdminUpdateInfoUserDto userDto, BindingResult result, ModelMap map)
+			@ModelAttribute("person") @Valid AdminUpdateInfoUserDto userDto, BindingResult result, ModelMap map, HttpServletRequest request)
 			throws Exception {
-
+			CartInfo myCart = Utils.getCartInSession(request);
 		if (result.hasErrors()) {
 			map.addAttribute("header", "header_admin");
 			map.addAttribute("footer", "footer_admin");
+			
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			return "adminUpdateUser";
 		}
 		userService.save(userDto);
@@ -200,10 +214,14 @@ public class AdminController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/edit-user-{id}/changePassword", method = RequestMethod.GET)
-	public String showChangePassForm(@PathVariable long id, Model model, ModelMap map, Principal principal) {
+	public String showChangePassForm(@PathVariable long id, Model model, ModelMap map, Principal principal, HttpServletRequest request) {
 
 		map.addAttribute("header", "header_admin");
 		map.addAttribute("footer", "footer_admin");
+		CartInfo myCart = Utils.getCartInSession(request);
+  
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		List<Person> list = getList(principal);
 		for (Person p : list)
 			if (p.getId() == id) {
@@ -215,13 +233,17 @@ public class AdminController {
 
 	@RequestMapping(value = "/edit-user-{id}/changePassword", method = RequestMethod.POST)
 	public String UpdatePassUserAccount(@PathVariable long id,
-			@ModelAttribute("person") @Valid UserUpdateInfoDto userDto, BindingResult result, ModelMap map, Principal principal) {
+			@ModelAttribute("person") @Valid UserUpdateInfoDto userDto, BindingResult result, ModelMap map, Principal principal, Model model, HttpServletRequest request) {
 		if (principal == null)
 			return "redirect:/";
 		String url = "";
 		if (result.hasErrors()) {
 			map.addAttribute("header", "header_admin");
 			map.addAttribute("footer", "footer_admin");
+			CartInfo myCart = Utils.getCartInSession(request);
+  
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			return "/adminChangePassword";
 		}
 
@@ -288,6 +310,11 @@ public class AdminController {
 		model.addAttribute("totalPageCount", totalPageCount);
 		model.addAttribute("baseUrl", baseUrl);
 		model.addAttribute("list", pages);
+
+		CartInfo myCart = Utils.getCartInSession(request);
+  
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 
 		return "listUser";
 	}

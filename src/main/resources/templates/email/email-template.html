@@ -29,7 +29,7 @@
             <p th:text="${'Dear ' + person.firstname + ' ' + person.lastname}"></p>
             <p >
                 You've requested a password reset.
-                <a th:href="${resetUrl}" style="font-size: 12pt; text-decoration: none; background-color: #e47343; color: white; padding: 5px 20px 5px 20px; border-radius: 5px;">reset your password</a>
+                <a class="btn btn-default" th:href="${resetUrl}" style="font-size: 12pt; text-decoration: none; background-color: #e47343; color: white; padding: 5px 20px 5px 20px; border-radius: 5px;">reset your password</a>
             </p>
             <p th:text="${'Expiry Date in ' + token.expiryDate}" style="font-weight: bold;"></p>
             <p>Thanks</p>

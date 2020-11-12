@@ -30,6 +30,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pq.jdev.b001.bookstore.books.model.Book;
 import pq.jdev.b001.bookstore.books.service.BookService;
 import pq.jdev.b001.bookstore.books.web.dto.UploadInformationDTO;
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.category.service.CategoryService;
 import pq.jdev.b001.bookstore.publishers.model.Publishers;
@@ -75,7 +77,7 @@ public class BookController {
 	@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
 	@GetMapping("/bookview/createform")
 	public String initializeCreating(@AuthenticationPrincipal User user, UploadInformationDTO dto, Model model,
-			RedirectAttributes redirectAttributes, Authentication authentication, ModelMap map) {
+			RedirectAttributes redirectAttributes, Authentication authentication, ModelMap map, HttpServletRequest request) {
 		try {
 			Person currentUser = new Person();
 			currentUser = userService.findByUsername(user.getUsername());
@@ -84,6 +86,9 @@ public class BookController {
 			model.addAttribute("dto", dto);
 			model.addAttribute("currentUser", currentUser);
 
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			int pagesizeCP = 15;
 			PagedListHolder<?> pagePubs = null;
 			PagedListHolder<?> pageCates = null;
@@ -120,6 +125,9 @@ public class BookController {
 			}
 			return "bookview/createform";
 		} catch (Exception e) {
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			if (authentication != null) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 				List<String> roles = new ArrayList<String>();
@@ -146,7 +154,7 @@ public class BookController {
 	@PostMapping("/bookview/createform")
 	public String createBook(@AuthenticationPrincipal User user, UploadInformationDTO dto,
 			@RequestParam(value = "idChecked", required = false) List<String> categoriesId, Model model, ModelMap map,
-			Authentication authentication) {
+			Authentication authentication, HttpServletRequest request) {
 		try {
 
 			int pagesizeCP = 15;
@@ -164,6 +172,10 @@ public class BookController {
 			}
 			model.addAttribute("publishers", pagePubs);
 			model.addAttribute("categories", pageCates);
+
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 
 			if (authentication != null) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -234,7 +246,7 @@ public class BookController {
 	@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
 	@GetMapping("/bookview/editform/{id}")
 	public String initializeEditing(@AuthenticationPrincipal User user, UploadInformationDTO dto,
-			@PathVariable("id") String id, Model model, Authentication authentication, ModelMap map) {
+			@PathVariable("id") String id, Model model, Authentication authentication, ModelMap map, HttpServletRequest request) {
 
 			int pagesizeCP = 15;
 			PagedListHolder<?> pagePubs = null;
@@ -251,6 +263,10 @@ public class BookController {
 			}
 			model.addAttribute("publishers", pagePubs);
 			model.addAttribute("categories", pageCates);
+
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 		
 		if (authentication != null) {
 			Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -314,6 +330,9 @@ public class BookController {
 			model.addAttribute("dto", dto);
 			return "bookview/editform";
 		} catch (Exception e) {
+			
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			if (authentication != null) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 				List<String> roles = new ArrayList<String>();
@@ -341,7 +360,7 @@ public class BookController {
 	public String editBook(@AuthenticationPrincipal User user, UploadInformationDTO dto,
 			@RequestParam("id") String editBookId,
 			@RequestParam(value = "idChecked", required = false) List<String> categoriesId, Model model,
-			RedirectAttributes redirectAttributes, ModelMap map, Authentication authentication) {
+			RedirectAttributes redirectAttributes, ModelMap map, Authentication authentication, HttpServletRequest request) {
 		try {
 
 			int pagesizeCP = 15;
@@ -359,6 +378,10 @@ public class BookController {
 			}
 			model.addAttribute("publishers", pagePubs);
 			model.addAttribute("categories", pageCates);
+
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			if (authentication != null) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 				List<String> roles = new ArrayList<String>();
@@ -387,6 +410,9 @@ public class BookController {
 			bookService.update(dto, currentUser, categoriesId, editBook);
 			return "bookview/success";
 		} catch (Exception e) {
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			if (authentication != null) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 				List<String> roles = new ArrayList<String>();
@@ -411,7 +437,7 @@ public class BookController {
 
 	@GetMapping("/bookview/infor/{id}")
 	public String showBookDetails(UploadInformationDTO dto, @PathVariable("id") String id, Model model, ModelMap map,
-			Authentication authentication) {
+			Authentication authentication, HttpServletRequest request) {
 		try {
 			if (authentication != null) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -468,8 +494,15 @@ public class BookController {
 			model.addAttribute("book", currentBook);
 			model.addAttribute("dto", dto);
 			model.addAttribute("id", id);
+
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			return "bookview/infor";
 		} catch (Exception e) {
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 			if (authentication != null) {
 				Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 				List<String> roles = new ArrayList<String>();

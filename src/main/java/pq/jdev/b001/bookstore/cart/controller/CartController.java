@@ -232,7 +232,7 @@ public class CartController {
          @ModelAttribute("customerDTO") @Validated CustomerDTO customerForm, //
          BindingResult result, //
          final RedirectAttributes redirectAttributes) {
-
+      CartInfo cartInfo = Utils.getCartInSession(request);
       if (authentication != null) {
          Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
          List<String> roles = new ArrayList<String>();
@@ -253,12 +253,14 @@ public class CartController {
  
       if (result.hasErrors()) {
          customerForm.setValid(false);
+         model.addAttribute("myCart", cartInfo);
+         model.addAttribute("cartForm", cartInfo);
          // Forward to reenter customer info.
          return "checkout";
       }
  
       customerForm.setValid(true);
-      CartInfo cartInfo = Utils.getCartInSession(request);
+      
       CustomerInfo customerInfo = new CustomerInfo(customerForm);
       cartInfo.setCustomerInfo(customerInfo);
  
@@ -296,6 +298,7 @@ public class CartController {
          return "redirect:/checkout";
       }
       model.addAttribute("myCart", cartInfo);
+      model.addAttribute("cartForm", cartInfo);
  
       return "checkoutComfirmation";
    }

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.category.service.CategoryService;
 import pq.jdev.b001.bookstore.publishers.model.Publishers;
@@ -41,7 +45,7 @@ public class UploadController {
 	private CategoryService categoryservice;
 	
 	@GetMapping("/upload")
-	public String viewUpLoad(Authentication authentication, ModelMap map, Model model) {
+	public String viewUpLoad(Authentication authentication, ModelMap map, Model model, HttpServletRequest request) {
 		if (authentication != null) {
 			Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 			List<String> roles = new ArrayList<String>();
@@ -76,6 +80,12 @@ public class UploadController {
 		}
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
+
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
+
+		
 		return "upload";
 	}
 

@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.users.model.Person;
 import pq.jdev.b001.bookstore.users.service.UserService;
 import pq.jdev.b001.bookstore.users.web.dto.UserChangePassDto;
@@ -59,15 +62,18 @@ public class UserUpdateInfoController {
 	//update info
 	@PreAuthorize("hasRole('EMPLOYEE')")
 	@GetMapping
-	public String showUpdateInfoForm(ModelMap map) {
+	public String showUpdateInfoForm(ModelMap map, HttpServletRequest request, Model model) {
 		map.addAttribute("header", "header_user");
 		map.addAttribute("footer", "footer_user");
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		return "/accountUser";
 	}
 
 	@PostMapping
 	public String UpdateUserAccount(@ModelAttribute("person") @Valid UserUpdateInfoDto userDto,
-			BindingResult result, ModelMap map, Authentication authentication) throws Exception {
+			BindingResult result, ModelMap map, Authentication authentication, HttpServletRequest request, Model model) throws Exception {
 
 		if (authentication == null)
 			return "redirect:/";
@@ -79,6 +85,9 @@ public class UserUpdateInfoController {
 	    	System.out.println(userDto.getConfirmPassword().equals(userDto.getPassword()));
 	    	map.addAttribute("header", "header_user");
 			map.addAttribute("footer", "footer_user");
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
             return "accountUser";
 	    }
 		userService.save(userDto);
@@ -89,15 +98,18 @@ public class UserUpdateInfoController {
 	//update pass
 	@PreAuthorize("hasRole('EMPLOYEE')")
 	@RequestMapping(value = "/changePassword", method = RequestMethod.GET)
-	public String showChangePassForm(ModelMap map) {
+	public String showChangePassForm(ModelMap map, HttpServletRequest request, Model model) {
 		map.addAttribute("header", "header_user");
 		map.addAttribute("footer", "footer_user");
+		CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
 		return "/changePassword";
 	}
 	
 	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)
 	public String UpdatePassUserAccount(@ModelAttribute("person2") @Valid UserChangePassDto userDto,
-			BindingResult result, ModelMap map, Authentication authentication) {
+			BindingResult result, ModelMap map, Authentication authentication, HttpServletRequest request, Model model) {
 		
 		if (authentication == null)
 			return "redirect:/";
@@ -105,6 +117,9 @@ public class UserUpdateInfoController {
 	    if (result.hasErrors()) {
 	    	map.addAttribute("header", "header_user");
 			map.addAttribute("footer", "footer_user");
+			CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
             return "changePassword";
 	    }
 	    

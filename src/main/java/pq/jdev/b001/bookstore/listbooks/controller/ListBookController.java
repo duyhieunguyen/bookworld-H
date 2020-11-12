@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +37,8 @@ import pq.jdev.b001.bookstore.publishers.model.Publishers;
 import pq.jdev.b001.bookstore.publishers.service.PublisherService;
 import pq.jdev.b001.bookstore.users.model.Person;
 import pq.jdev.b001.bookstore.users.service.UserService;
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 
 @Controller
 public class ListBookController {
@@ -118,6 +121,12 @@ public class ListBookController {
 		}
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
+
+		CartInfo cartInfo = Utils.getCartInSession(request);
+		model.addAttribute("myCart", cartInfo);
+		model.addAttribute("cartForm", cartInfo);
+
+		
 		return "redirect:/book/page/1";
 
 	}
@@ -218,6 +227,11 @@ public class ListBookController {
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
 
+
+		CartInfo cartInfo = Utils.getCartInSession(request);
+		model.addAttribute("myCart", cartInfo);
+		model.addAttribute("cartForm", cartInfo);
+
 		return "listbook";
 	}
 
@@ -254,7 +268,6 @@ public class ListBookController {
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
 		model.addAttribute("book", new Book());
-
 		return "savebook";
 	}
 
@@ -437,6 +450,10 @@ public class ListBookController {
 		}
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
+
+		CartInfo cartInfo = Utils.getCartInSession(request);
+		model.addAttribute("myCart", cartInfo);
+		model.addAttribute("cartForm", cartInfo);
 
 		return "listbook";
 	}

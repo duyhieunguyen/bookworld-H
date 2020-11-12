@@ -127,6 +127,7 @@ public class LoginController {
 		CartInfo myCart = Utils.getCartInSession(request);
   
 		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		return "indexcontainer";
 	}
 
@@ -207,6 +208,11 @@ public class LoginController {
 			map.addAttribute("footer", "footer_login");
 			map.addAttribute("ok", "FALSE");
 		}
+
+		CartInfo myCart = Utils.getCartInSession(request);
+  
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		return "indexcontainer";
 	}
 
@@ -326,14 +332,22 @@ public class LoginController {
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
 
+		CartInfo cartInfo = Utils.getCartInSession(request);
+		model.addAttribute("myCart", cartInfo);
+		model.addAttribute("cartForm", cartInfo);
+
 		return "indexcontainer";
 	}
 
 	@PreAuthorize("!(hasRole('EMPLOYEE') OR hasRole('ADMIN'))")
 	@GetMapping("/login")
-	public String login(ModelMap map) {
+	public String login(ModelMap map, HttpServletRequest request, Model model) {
 		map.addAttribute("header", "header_login");
 		map.addAttribute("footer", "footer_login");
+
+		CartInfo cartInfo = Utils.getCartInSession(request);
+		model.addAttribute("myCart", cartInfo);
+		model.addAttribute("cartForm", cartInfo);
 		return "signin";
 	}
 
@@ -355,7 +369,7 @@ public class LoginController {
 	}
 
 	@GetMapping(value = "/403")
-	public String accessDeniedPage(Authentication authentication, ModelMap map, Model model) {
+	public String accessDeniedPage(Authentication authentication, ModelMap map, Model model, HttpServletRequest request){
 		if (authentication != null) {
 			Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 			List<String> roles = new ArrayList<String>();
@@ -390,6 +404,10 @@ public class LoginController {
 		}
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
+		CartInfo myCart = Utils.getCartInSession(request);
+  
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		
 		return "403";
 	}

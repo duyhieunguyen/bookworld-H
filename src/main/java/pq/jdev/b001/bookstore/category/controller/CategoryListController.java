@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pq.jdev.b001.bookstore.books.service.BookService;
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.category.service.CategoryService;
 import pq.jdev.b001.bookstore.publishers.model.Publishers;
@@ -94,6 +96,9 @@ public class CategoryListController {
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
 		
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 
 		return "categoryList";
 	}
@@ -146,6 +151,10 @@ public class CategoryListController {
 		Timestamp ts = new Timestamp(time);
 		map.addAttribute("cd", cate.getCreateDate());
 		map.addAttribute("ud", ts);
+
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		redirect.addFlashAttribute("success", "Update category successfully!");
 		return "categoryadd";
 	}
@@ -202,6 +211,10 @@ public class CategoryListController {
 		model.addAttribute("totalPageCount", totalPageCount);
 		model.addAttribute("baseUrl", baseUrl);
 		model.addAttribute("categoryL", pageLs);
+
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 
 		return "categoryList";
 	}

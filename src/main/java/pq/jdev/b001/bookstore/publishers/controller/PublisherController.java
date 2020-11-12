@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pq.jdev.b001.bookstore.books.service.BookService;
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.category.service.CategoryService;
 import pq.jdev.b001.bookstore.publishers.model.Publishers;
@@ -126,6 +128,10 @@ public class PublisherController {
 		Timestamp ts = new Timestamp(time);
 		map.addAttribute("cd", ts);
 		map.addAttribute("ud", ts);
+
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		return "publisherAdd";
 	}
 	
@@ -165,6 +171,7 @@ public class PublisherController {
 	public String edit(@PathVariable int id, Model model, ModelMap map, HttpServletRequest request, Authentication authentication) {
 		map.addAttribute("header", "header_admin");
 		map.addAttribute("footer", "footer_admin");
+		
 		int pagesizeCP = 15;
 		PagedListHolder<?> pagePubs = null;
 		PagedListHolder<?> pageCates = null;
@@ -193,6 +200,9 @@ public class PublisherController {
 		Timestamp ts = new Timestamp(time);
 		map.addAttribute("cd", pub.getCreateDate());
 		map.addAttribute("ud", ts);
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		return "publisherAdd";
 	}
 
@@ -251,6 +261,9 @@ public class PublisherController {
 		}
 		model.addAttribute("publishers", pagePubs);
 		model.addAttribute("categories", pageCates);
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		return "publishersList";
 	}
 
@@ -306,6 +319,9 @@ public class PublisherController {
 		model.addAttribute("totalPageCount", totalPageCount);
 		model.addAttribute("baseUrl", baseUrl);
 		model.addAttribute("publishersL", pageLs);
+		CartInfo myCart = Utils.getCartInSession(request);
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 
 		return "publishersList";
 	}

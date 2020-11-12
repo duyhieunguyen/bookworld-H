@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import pq.jdev.b001.bookstore.cart.model.CartInfo;
+import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.users.model.Mail;
 import pq.jdev.b001.bookstore.users.model.PasswordResetToken;
 import pq.jdev.b001.bookstore.users.model.Person;
@@ -40,24 +43,34 @@ public class PasswordFogotController {
 	}
 
 	@GetMapping
-	public String displayForgotPasswordPage(ModelMap map) {
+	public String displayForgotPasswordPage(ModelMap map, HttpServletRequest request, Model model) {
 		map.addAttribute("header", "header_login");
 		map.addAttribute("footer", "footer_login");
+		CartInfo myCart = Utils.getCartInSession(request);
+  
+		model.addAttribute("cartForm", myCart);
+		model.addAttribute("myCart", myCart);
 		return "forgot-password";
 	}
 
 	@PostMapping
 	public String processForgotPasswordForm(@ModelAttribute("forgotPasswordForm") @Valid PasswordForgotDto form,
-			BindingResult result, HttpServletRequest request, ModelMap map) {
-
+			BindingResult result, HttpServletRequest request, ModelMap map, Model mode) {
+		CartInfo myCart = Utils.getCartInSession(request);
 		if (result.hasErrors()) {
 			map.addAttribute("header", "header_login");
 			map.addAttribute("footer", "footer_login");
+			
+  
+			mode.addAttribute("cartForm", myCart);
+			mode.addAttribute("myCart", myCart);
 			return "forgot-password";
 		}
 		
 		map.addAttribute("header", "header_login");
 		map.addAttribute("footer", "footer_login");
+		mode.addAttribute("cartForm", myCart);
+		mode.addAttribute("myCart", myCart);
 		
 		Person person = userService.findByEmail(form.getEmail());
 		if (person == null) {
