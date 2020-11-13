@@ -9,6 +9,8 @@ import pq.jdev.b001.bookstore.books.service.BookService;
 import pq.jdev.b001.bookstore.cart.dto.CustomerDTO;
 import pq.jdev.b001.bookstore.cart.model.CartInfo;
 import pq.jdev.b001.bookstore.cart.model.CustomerInfo;
+import pq.jdev.b001.bookstore.cart.model.OrderInfo;
+import pq.jdev.b001.bookstore.cart.pagination.PaginationResult;
 import pq.jdev.b001.bookstore.cart.service.CartService;
 import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.cart.validator.CustomerDTOValidator;
@@ -379,6 +381,26 @@ public class CartController {
       model.addAttribute("lastOrderedCart", lastOrderedCart);
       return "shoppingCartFinalize";
    }
+
+   // @RequestMapping(value = { "/admin/orderList" }, method = RequestMethod.GET)
+   // public String orderList(Model model, //
+   //       @RequestParam(value = "page", defaultValue = "1") String pageStr) {
+   //       int page = 1;
+   //       try {
+   //          page = Integer.parseInt(pageStr);
+   //       } catch (Exception e) {
+   //       }
+   //       final int MAX_RESULT = 5;
+   //       final int MAX_NAVIGATION_PAGE = 10;
+      
+   //       PaginationResult<OrderInfo> paginationResult //
+   //             = cartService.listOrderInfo(page, MAX_RESULT, MAX_NAVIGATION_PAGE);
+       
+   //          model.addAttribute("paginationResult", paginationResult);
+   //    return "orderList";
+   // }
+
+
 
 
 

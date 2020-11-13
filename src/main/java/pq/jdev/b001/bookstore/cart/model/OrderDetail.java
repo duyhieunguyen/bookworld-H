@@ -34,7 +34,7 @@ public class OrderDetail implements Serializable{
     private int quanity;
  
     @Column(name = "Price", nullable = false)
-    private double price;
+    private Long price;
  
     @Column(name = "Amount", nullable = false)
     private double amount;
@@ -71,11 +71,11 @@ public class OrderDetail implements Serializable{
         this.quanity = quanity;
     }
  
-    public double getPrice() {
+    public Long getPrice() {
         return price;
     }
  
-    public void setPrice(double price) {
+    public void setPrice(Long price) {
         this.price = price;
     }
  
