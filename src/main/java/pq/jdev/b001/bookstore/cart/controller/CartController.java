@@ -11,6 +11,7 @@ import pq.jdev.b001.bookstore.cart.dto.CustomerDTO;
 import pq.jdev.b001.bookstore.cart.model.CartInfo;
 import pq.jdev.b001.bookstore.cart.model.CustomerInfo;
 import pq.jdev.b001.bookstore.cart.model.Order;
+import pq.jdev.b001.bookstore.cart.model.OrderDetailInfo;
 import pq.jdev.b001.bookstore.cart.model.OrderInfo;
 import pq.jdev.b001.bookstore.cart.pagination.PaginationResult;
 import pq.jdev.b001.bookstore.cart.repository.CartRepository;
@@ -20,6 +21,7 @@ import pq.jdev.b001.bookstore.cart.validator.CustomerDTOValidator;
 import pq.jdev.b001.bookstore.payment.config.PaypalPaymentIntent;
 import pq.jdev.b001.bookstore.payment.config.PaypalPaymentMethod;
 import pq.jdev.b001.bookstore.payment.service.PaypalService;
+import pq.jdev.b001.bookstore.users.model.Person;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -51,11 +53,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-
-
 @Controller
 public class CartController {
-    
+
    @Autowired
    private CartService cartService;
 
@@ -65,14 +65,6 @@ public class CartController {
    @Autowired
    private CustomerDTOValidator customerDTOValidator;
 
-   // @Autowired
-   // private PaypalService paypalService;
-   
-   // private Logger log = LoggerFactory.getLogger(getClass());
-
-   // public static final String URL_PAYPAL_SUCCESS = "pay/success";
-	// public static final String URL_PAYPAL_CANCEL = "pay/cancel";
-
    @InitBinder
    public void myInitBinder(WebDataBinder dataBinder) {
       Object target = dataBinder.getTarget();
@@ -80,23 +72,24 @@ public class CartController {
          return;
       }
       System.out.println("Target=" + target);
- 
+
       // Case update quantity in cart
       // (@ModelAttribute("cartForm") @Validated CartInfo cartForm)
       if (target.getClass() == CartInfo.class) {
- 
+
       }
- 
+
       // Case save customer information.
       // (@ModelAttribute @Validated CustomerInfo customerForm)
       else if (target.getClass() == CustomerDTO.class) {
          dataBinder.setValidator(customerDTOValidator);
       }
- 
+
    }
 
    @RequestMapping({ "/buyBook" })
-   public String listProductHandler(HttpServletRequest request, Model model, Authentication authentication, ModelMap map, //
+   public String listProductHandler(HttpServletRequest request, Model model, Authentication authentication,
+         ModelMap map, //
          @RequestParam(value = "bookId", defaultValue = "") Long bookId) {
 
       if (authentication != null) {
@@ -116,21 +109,21 @@ public class CartController {
          map.addAttribute("header", "header_login");
          map.addAttribute("footer", "footer_login");
       }
- 
+
       Book book = null;
       if (bookId != null) {
-        book = bookService.findBookByID(bookId);
+         book = bookService.findBookByID(bookId);
       }
       if (book != null) {
- 
+
          //
          CartInfo cartInfo = Utils.getCartInSession(request);
- 
+
          BookInfo bookInfo = new BookInfo(book);
- 
+
          cartInfo.addBook(bookInfo, 1);
       }
- 
+
       return "redirect:/shoppingCart";
    }
 
@@ -142,23 +135,23 @@ public class CartController {
          book = bookService.findBookByID(bookId);
       }
       if (book != null) {
- 
+
          CartInfo cartInfo = Utils.getCartInSession(request);
- 
+
          BookInfo bookInfo = new BookInfo(book);
- 
+
          cartInfo.removeProduct(bookInfo);
- 
+
       }
- 
+
       return "redirect:/shoppingCart";
    }
 
    // POST: Update quantity for product in cart
    @RequestMapping(value = { "/shoppingCart" }, method = RequestMethod.POST)
-   public String shoppingCartUpdateQty(HttpServletRequest request, Authentication authentication, ModelMap map,//
-           Model model, //
-           @ModelAttribute("cartForm") CartInfo cartForm) {
+   public String shoppingCartUpdateQty(HttpServletRequest request, Authentication authentication, ModelMap map, //
+         Model model, //
+         @ModelAttribute("cartForm") CartInfo cartForm) {
 
       if (authentication != null) {
          Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -177,19 +170,19 @@ public class CartController {
          map.addAttribute("header", "header_login");
          map.addAttribute("footer", "footer_login");
       }
-   
+
       CartInfo cartInfo = Utils.getCartInSession(request);
       cartInfo.updateQuantity(cartForm);
-   
+
       return "redirect:/shoppingCart";
    }
 
+   // GET: Show cart.
+   @RequestMapping(value = { "/shoppingCart" }, method = RequestMethod.GET)
+   public String shoppingCartHandler(HttpServletRequest request, Model model, Authentication authentication,
+         ModelMap map) {
 
-    // GET: Show cart.
-    @RequestMapping(value = { "/shoppingCart" }, method = RequestMethod.GET)
-    public String shoppingCartHandler(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
-
-       if (authentication != null) {
+      if (authentication != null) {
          Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
          List<String> roles = new ArrayList<String>();
          for (GrantedAuthority a : authorities) {
@@ -206,15 +199,16 @@ public class CartController {
          map.addAttribute("header", "header_login");
          map.addAttribute("footer", "footer_login");
       }
-       CartInfo myCart = Utils.getCartInSession(request);
-  
-       model.addAttribute("cartForm", myCart);
-       return "shoppingCart";
-    }
-  
+      CartInfo myCart = Utils.getCartInSession(request);
+
+      model.addAttribute("cartForm", myCart);
+      return "shoppingCart";
+   }
+
    // GET: Enter customer information.
    @RequestMapping(value = { "/checkout" }, method = RequestMethod.GET)
-   public String shoppingCartCustomerForm(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
+   public String shoppingCartCustomerForm(HttpServletRequest request, Model model, Authentication authentication,
+         ModelMap map) {
 
       if (authentication != null) {
          Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -251,7 +245,7 @@ public class CartController {
       return "checkout";
    }
 
-    // POST: Save customer information.
+   // POST: Save customer information.
    @RequestMapping(value = { "/checkout" }, method = RequestMethod.POST)
    public String shoppingCartCustomerSave(HttpServletRequest request, Authentication authentication, ModelMap map, //
          Model model, //
@@ -276,7 +270,7 @@ public class CartController {
          map.addAttribute("header", "header_login");
          map.addAttribute("footer", "footer_login");
       }
- 
+
       if (result.hasErrors()) {
          customerForm.setValid(false);
          model.addAttribute("myCart", cartInfo);
@@ -284,18 +278,19 @@ public class CartController {
          // Forward to reenter customer info.
          return "checkout";
       }
- 
+
       customerForm.setValid(true);
-      
+
       CustomerInfo customerInfo = new CustomerInfo(customerForm);
       cartInfo.setCustomerInfo(customerInfo);
- 
+
       return "redirect:/checkoutComfirmation";
    }
- 
+
    // GET: Show information to confirm.
    @RequestMapping(value = { "/checkoutComfirmation" }, method = RequestMethod.GET)
-   public String shoppingCartConfirmationReview(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
+   public String shoppingCartConfirmationReview(HttpServletRequest request, Model model, Authentication authentication,
+         ModelMap map) {
 
       if (authentication != null) {
          Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -315,24 +310,25 @@ public class CartController {
          map.addAttribute("footer", "footer_login");
       }
       CartInfo cartInfo = Utils.getCartInSession(request);
- 
+
       if (cartInfo == null || cartInfo.isEmpty()) {
- 
+
          return "redirect:/shoppingCart";
       } else if (!cartInfo.isValidCustomer()) {
- 
+
          return "redirect:/checkout";
       }
       model.addAttribute("myCart", cartInfo);
       model.addAttribute("cartForm", cartInfo);
- 
+
       return "checkoutComfirmation";
    }
- 
+
    // POST: Submit Cart (Save)
    @RequestMapping(value = { "/checkoutComfirmation" }, method = RequestMethod.POST)
- 
-   public String shoppingCartConfirmationSave(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
+
+   public String shoppingCartConfirmationSave(HttpServletRequest request, Model model, Authentication authentication,
+         ModelMap map) {
       if (authentication != null) {
          Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
          List<String> roles = new ArrayList<String>();
@@ -352,49 +348,32 @@ public class CartController {
       }
 
       CartInfo cartInfo = Utils.getCartInSession(request);
- 
+
       if (cartInfo.isEmpty()) {
- 
+
          return "redirect:/shoppingCart";
       } else if (!cartInfo.isValidCustomer()) {
- 
+
          return "redirect:/checkout";
-      } 
+      }
 
       try {
          cartService.saveOrder(cartInfo);
       } catch (Exception e) {
          return "checkoutComfirmation";
       }
- 
+
       // Remove Cart from Session.
       Utils.removeCartInSession(request);
       // Store last cart.
       Utils.storeLastOrderedCartInSession(request, cartInfo);
- 
+
       return "redirect:/shoppingCartFinalize";
    }
 
-   // @GetMapping(URL_PAYPAL_CANCEL)
-	// public String cancelPay(){
-	// 	return "cancel";
-	// }
-
-   // @GetMapping(URL_PAYPAL_SUCCESS)
-	// public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
-	// 	try {
-	// 		Payment payment = paypalService.executePayment(paymentId, payerId);
-	// 		if(payment.getState().equals("approved")){
-	// 			return "success";
-	// 		}
-	// 	} catch (PayPalRESTException e) {
-	// 		log.error(e.getMessage());
-	// 	}
-	// 	return "redirect:/";
-	// }
- 
    @RequestMapping(value = { "/shoppingCartFinalize" }, method = RequestMethod.GET)
-   public String shoppingCartFinalize(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
+   public String shoppingCartFinalize(HttpServletRequest request, Model model, Authentication authentication,
+         ModelMap map) {
 
       if (authentication != null) {
          Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -413,9 +392,9 @@ public class CartController {
          map.addAttribute("header", "header_login");
          map.addAttribute("footer", "footer_login");
       }
- 
+
       CartInfo lastOrderedCart = Utils.getLastOrderedCartInSession(request);
- 
+
       if (lastOrderedCart == null) {
          return "redirect:/shoppingCart";
       }
@@ -423,107 +402,159 @@ public class CartController {
       return "shoppingCartFinalize";
    }
 
-   @PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("/orderList")
-	public String index(Model model, HttpServletRequest request, RedirectAttributes redirect) {
-		request.getSession().setAttribute("listOrder", null);
+   @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+   @GetMapping("/orderList")
+   public String index(Model model, HttpServletRequest request, RedirectAttributes redirect) {
+      request.getSession().setAttribute("listOrder", null);
 
-		if (model.asMap().get("success") != null)
-			redirect.addFlashAttribute("success", model.asMap().get("success").toString());
-		return "redirect:/orderList/page/1";
+      if (model.asMap().get("success") != null)
+         redirect.addFlashAttribute("success", model.asMap().get("success").toString());
+      return "redirect:/orderList/page/1";
    }
-   
-   // @RequestMapping(value = { "/admin/orderList" }, method = RequestMethod.GET)
-   // public String orderList(Model model, //
-   //       @RequestParam(value = "page", defaultValue = "1") String pageStr) {
-   //    int page = 1;
-   //    try {
-   //       page = Integer.parseInt(pageStr);
-   //    } catch (Exception e) {
-   //    }
-   //    final int MAX_RESULT = 5;
-   //    final int MAX_NAVIGATION_PAGE = 10;
- 
-   //    PaginationResult<OrderInfo> paginationResult //
-   //          = orderDAO.listOrderInfo(page, MAX_RESULT, MAX_NAVIGATION_PAGE);
- 
-   //    model.addAttribute("paginationResult", paginationResult);
-   //    return "/admin/orderList";
-   // }
 
-
-   @PreAuthorize("hasRole('ADMIN')")
+   @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
    @GetMapping("/orderList/page/{pageNumber}")
-   public String orderList(HttpServletRequest request, @PathVariable int pageNumber, Model model, ModelMap map, Authentication authentication) {
+   public String orderList(HttpServletRequest request, @PathVariable int pageNumber, Model model, ModelMap map,
+         Authentication authentication) {
 
-         if (authentication != null) {
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            List<String> roles = new ArrayList<String>();
-            for (GrantedAuthority a : authorities) {
-               roles.add(a.getAuthority());
-            }
-
-            if (isUser(roles)) {
-               map.addAttribute("header", "header_user");
-               map.addAttribute("footer", "footer_user");
-            } else if (isAdmin(roles)) {
-               map.addAttribute("header", "header_admin");
-               map.addAttribute("footer", "footer_admin");
-            }
-         } else {
-            map.addAttribute("header", "header_login");
-            map.addAttribute("footer", "footer_login");
+      if (authentication != null) {
+         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+         List<String> roles = new ArrayList<String>();
+         for (GrantedAuthority a : authorities) {
+            roles.add(a.getAuthority());
          }
 
-         PagedListHolder<?> pages = (PagedListHolder<?>) request.getSession().getAttribute("listOrder");
-         
-         int pagesize = 7;
-         List<Order> list = cartService.findAll();
-         if (pages == null) {
-            pages = new PagedListHolder<>(list);
-            pages.setPageSize(pagesize);
-         } else {
-            final int goToPage = pageNumber - 1;
-            if (goToPage <= pages.getPageCount() && goToPage >= 0) {
-               pages.setPage(goToPage);
-            }
+         if (isUser(roles)) {
+            map.addAttribute("header", "header_user");
+            map.addAttribute("footer", "footer_user");
+            map.addAttribute("ok", "FALSE");
+         } else if (isAdmin(roles)) {
+            map.addAttribute("header", "header_admin");
+            map.addAttribute("footer", "footer_admin");
+            map.addAttribute("ok", "TRUE");
          }
-         request.getSession().setAttribute("listOrder", pages);
-   
-         int current = pages.getPage() + 1;
-         int begin = Math.max(1, current - list.size());
-         int end = Math.min(begin + 5, pages.getPageCount());
-         int totalPageCount = pages.getPageCount();
-         String baseUrl = "/orderList/page/";
-   
-         model.addAttribute("beginIndex", begin);
-         model.addAttribute("endIndex", end);
-         model.addAttribute("currentIndex", current);
-         model.addAttribute("totalPageCount", totalPageCount);
-         model.addAttribute("baseUrl", baseUrl);
-         model.addAttribute("listOrder", pages);
+      } else {
+         map.addAttribute("header", "header_login");
+         map.addAttribute("footer", "footer_login");
+         map.addAttribute("ok", "FALSE");
+      }
 
-         CartInfo myCart = Utils.getCartInSession(request);
-			model.addAttribute("cartForm", myCart);
-			model.addAttribute("myCart", myCart);
+      PagedListHolder<?> pages = (PagedListHolder<?>) request.getSession().getAttribute("listOrder");
+
+      int pagesize = 7;
+      List<Order> list = cartService.findAll();
+      if (pages == null) {
+         pages = new PagedListHolder<>(list);
+         pages.setPageSize(pagesize);
+      } else {
+         final int goToPage = pageNumber - 1;
+         if (goToPage <= pages.getPageCount() && goToPage >= 0) {
+            pages.setPage(goToPage);
+         }
+      }
+      request.getSession().setAttribute("listOrder", pages);
+
+      int current = pages.getPage() + 1;
+      int begin = Math.max(1, current - list.size());
+      int end = Math.min(begin + 5, pages.getPageCount());
+      int totalPageCount = pages.getPageCount();
+      String baseUrl = "/orderList/page/";
+
+      model.addAttribute("beginIndex", begin);
+      model.addAttribute("endIndex", end);
+      model.addAttribute("currentIndex", current);
+      model.addAttribute("totalPageCount", totalPageCount);
+      model.addAttribute("baseUrl", baseUrl);
+      model.addAttribute("listOrder", pages);
+
+      CartInfo myCart = Utils.getCartInSession(request);
+      model.addAttribute("cartForm", myCart);
+      model.addAttribute("myCart", myCart);
       return "orderList";
    }
 
+   @RequestMapping({ "/orderRemove" })
+   public String removeOrderHandler(HttpServletRequest request, Model model,
+         @RequestParam(value = "orderId", defaultValue = "") String orderId) {
+      Order order = null;
+      
 
+      
+      return "redirect:/orderList";
+   }
 
-//    @RequestMapping(value = { "/bookImage" }, method = RequestMethod.GET)
-//    public void productImage(HttpServletRequest request, HttpServletResponse response, Model model,
-//          @RequestParam("bookId") Long bookId) throws IOException {
-//       Book book = null;
-//       if (bookId != null) {
-// 		book = this.bookService.findBookByID(bookId);
-//       }
-//       if (book != null && book.getPicture() != null) {
-//          response.setContentType("images/jpeg, images/jpg, images/png, images/gif");
-//          response.getOutputStream().write(book.getPicture());
-//       }
-//       response.getOutputStream().close();
-//    }
+   // // tao list order
+	// @ModelAttribute("list")
+	// public List<Order> getList(Person p) {
+	// 	List<Order> oldList = cartService.findAll();
+	// 	List<Order> newList = new ArrayList<Order>();
+	// 	Long id = p.getId();
+	// 	for (Order o : oldList) {
+	// 		o.setOk(0);
+	// 		if (o.getPerson().getId() == id)
+	// 			o.setOk(1);
+
+	// 		newList.add(o);
+	// 	}
+	// 	return newList;
+	// }
+
+   // @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+   @RequestMapping(value = { "/order" }, method = RequestMethod.GET)
+   public String orderView(Model model, @RequestParam("orderId") String orderId, HttpServletRequest request,
+         ModelMap map, Authentication authentication) {
+
+      if (authentication != null) {
+         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+         List<String> roles = new ArrayList<String>();
+         for (GrantedAuthority a : authorities) {
+            roles.add(a.getAuthority());
+         }
+
+         if (isUser(roles)) {
+            map.addAttribute("header", "header_user");
+            map.addAttribute("footer", "footer_user");
+         } else if (isAdmin(roles)) {
+            map.addAttribute("header", "header_admin");
+            map.addAttribute("footer", "footer_admin");
+         }
+      } else {
+         map.addAttribute("header", "header_login");
+         map.addAttribute("footer", "footer_login");
+      }
+
+      OrderInfo orderInfo = null;
+      if (orderId != null) {
+         orderInfo = cartService.getOrderInfo(orderId);
+      }
+      if (orderInfo == null) {
+         return "redirect:/orderList";
+      }
+      List<OrderDetailInfo> details = cartService.listOrderDetailInfos(orderId);
+      orderInfo.setDetails(details);
+
+      model.addAttribute("orderInfo", orderInfo);
+      CartInfo myCart = Utils.getCartInSession(request);
+      model.addAttribute("cartForm", myCart);
+      model.addAttribute("myCart", myCart);
+
+      return "order";
+   }
+
+   // @RequestMapping(value = { "/bookImage" }, method = RequestMethod.GET)
+   // public void productImage(HttpServletRequest request, HttpServletResponse
+   // response, Model model,
+   // @RequestParam("bookId") Long bookId) throws IOException {
+   // Book book = null;
+   // if (bookId != null) {
+   // book = this.bookService.findBookByID(bookId);
+   // }
+   // if (book != null && book.getPicture() != null) {
+   // response.setContentType("images/jpeg, images/jpg, images/png, images/gif");
+   // response.getOutputStream().write(book.getPicture());
+   // }
+   // response.getOutputStream().close();
+   // }
 
    private boolean isUser(List<String> roles) {
       if (roles.contains("ROLE_EMPLOYEE")) {

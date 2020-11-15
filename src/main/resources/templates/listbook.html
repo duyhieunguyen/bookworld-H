@@ -116,7 +116,7 @@
                 </div>
                 <div class="filter-buttons">
                     <div class="filter btn" data-filter="all">All Releases</div>
-                    <div class="filter btn " th:data-filter="'.' + ${booksa}" th:each="contact,iterStat : ${categories.pageList}">
+                    <div class="filter btn" th:data-filter="'.' + ${categoryL}" th:each="contact,iterStat : ${categories.pageList}">
                         <span th:text="${contact.name}"></span></div>
                     <div class="filter btn" data-filter=".adults">Adults</div>
                     <div class="filter btn" data-filter=".kids-teens">Kids &amp; Teens</div>
@@ -139,7 +139,7 @@
             <th:block th:unless="${#lists.isEmpty(books.pageList)}">
                 <div id="category-filter">
                     <ul class="category-list">
-                        <li th:class="'category-item ' + ${booksa}"  th:each="contactB,iterStat : ${books.pageList}">
+                        <li th:class="'category-item ' + ${categoryL}"  th:each="contactB,iterStat : ${books.pageList}">
                             <figure>
                                 <!-- <img th:src="@{'/img/bookscover/'+${contactB.picture}}" th:if="${contactB.picture != null}"
                                     style="width: 355px; height: 266px;" alt="New Releaase" /> -->

@@ -106,4 +106,5 @@ public class OrderInfo {
     public void setDetails(List<OrderDetailInfo> details) {
         this.details = details;
     }
+
 }

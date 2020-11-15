@@ -25,7 +25,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import pq.jdev.b001.bookstore.books.model.Book;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = "email"), name="person")
 public class Person implements Serializable{
 	private static final long serialVersionUID = 1L;
 

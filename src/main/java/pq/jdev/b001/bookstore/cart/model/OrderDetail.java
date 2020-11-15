@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import pq.jdev.b001.bookstore.books.model.Book;
 
 @Entity
-@Table(name = "Order_Details")
+@Table(name = "order_details")
 public class OrderDetail implements Serializable{
  
     

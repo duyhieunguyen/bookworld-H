@@ -76,17 +76,7 @@ public class PaymentController {
 					return "redirect:" + links.getHref();
 				}
 			}
-			CartInfo cartInfo = pq.jdev.b001.bookstore.cart.utils.Utils.getCartInSession(request);
-			try {
-				cartService.saveOrder(cartInfo);
-			 } catch (Exception e) {
-				return "checkoutComfirmation";
-			 }
-		
-			 // Remove Cart from Session.
-			 pq.jdev.b001.bookstore.cart.utils.Utils.removeCartInSession(request);
-			 // Store last cart.
-			 pq.jdev.b001.bookstore.cart.utils.Utils.storeLastOrderedCartInSession(request, cartInfo);
+			
 		} catch (PayPalRESTException e) {
 			log.error(e.getMessage());
 		}
@@ -151,11 +141,21 @@ public class PaymentController {
 				if (myCart == null) {
 					return "redirect:/shoppingCart";
 				}
-				model.addAttribute("lastOrderedCart", myCart);
+
+				try {
+					cartService.saveOrder(myCart);
+				} catch (Exception e) {
+					return "redirect:/";
+				}
+
 				 // Remove Cart from Session.
 				 pq.jdev.b001.bookstore.cart.utils.Utils.removeCartInSession(request);
 				 // Store last cart.
 				 pq.jdev.b001.bookstore.cart.utils.Utils.storeLastOrderedCartInSession(request, myCart);
+
+				CartInfo lastOrderedCart = pq.jdev.b001.bookstore.cart.utils.Utils.getLastOrderedCartInSession(request);
+				model.addAttribute("lastOrderedCart", lastOrderedCart);
+				
 				return "paymentSuccess";
 			}
 		} catch (PayPalRESTException e) {

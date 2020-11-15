@@ -6,6 +6,7 @@ import org.hibernate.query.Query;
 
 import pq.jdev.b001.bookstore.cart.model.CartInfo;
 import pq.jdev.b001.bookstore.cart.model.Order;
+import pq.jdev.b001.bookstore.cart.model.OrderDetail;
 import pq.jdev.b001.bookstore.cart.model.OrderDetailInfo;
 import pq.jdev.b001.bookstore.cart.model.OrderInfo;
 import pq.jdev.b001.bookstore.cart.pagination.PaginationResult;
@@ -14,15 +15,21 @@ public interface CartService {
     
     void saveOrder(CartInfo cartInfo);
 
-    // public OrderInfo getOrderInfo(String orderId);
+    OrderInfo getOrderInfo(String orderId);
 
-    // int getMaxOrderNum();
+    int getMaxOrderNum();
 
     Order findOrder(String orderId);
+
+    OrderDetail findOrderDedailById(String orderId);
 
     List<OrderDetailInfo> listOrderDetailInfos(String orderId);
 
     List<Order> findAll();
+
+    void deleteOrderDetail(String orderId);
+
+    void deleteOrder(String orderId);
 
     // Query<OrderInfo> queryOrderInfo();
 

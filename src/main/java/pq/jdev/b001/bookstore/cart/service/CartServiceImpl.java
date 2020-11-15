@@ -22,6 +22,7 @@ import pq.jdev.b001.bookstore.cart.model.OrderDetail;
 import pq.jdev.b001.bookstore.cart.model.OrderDetailInfo;
 import pq.jdev.b001.bookstore.cart.model.OrderInfo;
 import pq.jdev.b001.bookstore.cart.repository.CartRepository;
+import pq.jdev.b001.bookstore.cart.repository.OrderDetailRepository;
 import pq.jdev.b001.bookstore.cart.pagination.PaginationResult;
 
 import org.hibernate.Session;
@@ -36,15 +37,52 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
     @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
+    @Autowired
     private BookService bookService;
 
    
   
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveOrder(CartInfo cartInfo) {
-        // TODO Auto-generated method stub
+       
+        System.out.println("getMaxOrderNum" + getMaxOrderNum());
+        int orderNum = this.getMaxOrderNum() + 1;
+        Order order = new Order();
 
+        order.setId(UUID.randomUUID().toString());
+        order.setOrderNum(orderNum);
+        order.setOrderDate(new Date());
+        order.setAmount(cartInfo.getAmountTotal());
+ 
+        CustomerInfo customerInfo = cartInfo.getCustomerInfo();
+        order.setCustomerName(customerInfo.getName());
+        order.setCustomerEmail(customerInfo.getEmail());
+        order.setCustomerPhone(customerInfo.getPhone());
+        order.setCustomerAddress(customerInfo.getAddress());
+
+        cartRepository.save(order);
+
+        List<CartLineInfo> lines = cartInfo.getCartLines();
+
+        for (CartLineInfo line : lines) {
+            OrderDetail detail = new OrderDetail();
+            detail.setId(UUID.randomUUID().toString());
+            detail.setOrder(order);
+            detail.setAmount(line.getAmount());
+            detail.setPrice(line.getBookInfo().getPrice());
+            detail.setQuanity(line.getQuantity());
+ 
+            Long bookId = line.getBookInfo().getBookId();
+            Book book = this.bookService.findBookByID(bookId);
+            detail.setBook(book);
+            orderDetailRepository.save(detail);
+            
+        }
+        cartInfo.setOrderNum(orderNum);
     }
 
 
@@ -54,7 +92,8 @@ public class CartServiceImpl implements CartService {
         Order order = cartRepository.getOne(orderId);
 		return order;
     }
-
+    
+    @Override
     public OrderInfo getOrderInfo(String orderId) {
         Order order = this.findOrder(orderId);
         if (order == null) {
@@ -75,41 +114,29 @@ public class CartServiceImpl implements CartService {
         return cartRepository.findAll();
     }
 
-    // @Override
-    // public OrderInfo queryOrderInfo(OrderInfo orderInfo) {
-    //     return cartRepository.queryOrderInfo();
-    // }
+    @Override
+    public int getMaxOrderNum() {
+        Integer value = (Integer)cartRepository.getMaxOrderNum();
+        if(value == null){
+            return 0;
+        }
+        return value;
+    }
 
-    // @Override
-    // public PaginationResult<OrderInfo> listOrderInfo(int page, int maxResult, int maxNavigationPage) {
-    //     String sql = "Select new " + OrderInfo.class.getName()//
-    //                 + "(ord.id, ord.orderDate, ord.orderNum, ord.amount, "
-    //                 + " ord.customerName, ord.customerAddress, ord.customerEmail, ord.customerPhone) " + " from "
-    //                 + Order.class.getName() + " ord "//
-    //                 + " order by ord.orderNum desc";
+    @Override
+    public OrderDetail findOrderDedailById(String orderId) {
+        return orderDetailRepository.getOne(orderId);
+    }
 
-    //     Session session = this.sessionFactory.getCurrentSession();
-    //     Query<OrderInfo> query = session.createQuery(sql, OrderInfo.class);
-    //     return new PaginationResult<OrderInfo>(query, page, maxResult, maxNavigationPage);
-    // }
+    @Override
+    public void deleteOrderDetail(String orderId) {
+        orderDetailRepository.deleteById(orderId);
 
+    }
+
+    @Override
+    public void deleteOrder(String orderId) {
+        cartRepository.deleteById(orderId);
+    }
     
-    // private Query<OrderInfo> queryOrderInfo() {
-    //     return cartRepository.queryOrderInfo();
-    // }
-
-   
-
-
-
-     
-
-    
- 
-   
-    
-
-  
-    
-
 }

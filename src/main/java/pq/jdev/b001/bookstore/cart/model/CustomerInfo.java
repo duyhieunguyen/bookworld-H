@@ -15,12 +15,12 @@ public class CustomerInfo {
  
     }
  
-    public CustomerInfo(CustomerDTO customerForm) {
-        this.name = customerForm.getName();
-        this.address = customerForm.getAddress();
-        this.email = customerForm.getEmail();
-        this.phone = customerForm.getPhone();
-        this.valid = customerForm.isValid();
+    public CustomerInfo(CustomerDTO customerDTO) {
+        this.name = customerDTO.getName();
+        this.address = customerDTO.getAddress();
+        this.email = customerDTO.getEmail();
+        this.phone = customerDTO.getPhone();
+        this.valid = customerDTO.isValid();
     }
  
     public String getName() {

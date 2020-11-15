@@ -17,7 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import pq.jdev.b001.bookstore.books.model.Book;
 
 @Entity
-@Table
+@Table(name="publishers")
 public class Publishers {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
