@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 
 import pq.jdev.b001.bookstore.cart.model.Order;
 import pq.jdev.b001.bookstore.cart.model.OrderDetailInfo;
+import pq.jdev.b001.bookstore.cart.model.OrderInfo;
 
 import java.util.List;
 
@@ -19,5 +20,9 @@ public interface CartRepository extends JpaRepository<Order, String>, CrudReposi
     @Query("SELECT new pq.jdev.b001.bookstore.cart.model.OrderDetailInfo (d.id, d.book.id, d.book.title, d.quanity, d.price, d.amount) FROM OrderDetail d WHERE d.order.id =: orderId")
     List<OrderDetailInfo> listOrderDetailInfos(@Param("orderId") String orderId);
     
-    
+    @Query("SELECT MAX(o.orderNum) FROM Order o")
+    Integer getMaxOrderNum();
+
+    // @Query("SELECT NEW pq.jdev.b001.bookstore.cart.model.OrderInfo (ord.id, ord.orderDate, ord.orderNum, ord.amout, ord.customerName, ord.customerAddress, ord.customerEmail, ord.customerPhone) FROM Order ord ORDER BY ord.orderNum desc")
+    // OrderInfo getOrderInfo();
 }

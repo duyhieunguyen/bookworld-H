@@ -33,7 +33,7 @@ public interface BookRepository extends CrudRepository<Book, Long>, JpaRepositor
 
 	@Modifying
 	@Query("update Book book set book.price =:price where book.id =:bookid")
-	public void saveUpdatePrice(@Param("bookid") Long bookid, @Param("price") Long price);
+	public void saveUpdatePrice(@Param("bookid") Long bookid, @Param("price") Double price);
 
 	@Modifying
 	@Query("update Book book set book.domain =:domain where book.id =:bookid")

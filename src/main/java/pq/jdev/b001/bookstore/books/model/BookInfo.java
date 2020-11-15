@@ -4,7 +4,7 @@ public class BookInfo {
     private Long bookId;
     private String title;
     private String author;
-    private Long price;
+    private double price;
 
     public BookInfo() {
     }
@@ -17,7 +17,7 @@ public class BookInfo {
     }
  
     // Using in JPA/Hibernate query
-    public BookInfo(Long bookId, String title, String author, Long price) {
+    public BookInfo(Long bookId, String title, String author, double price) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -46,11 +46,11 @@ public class BookInfo {
 	public void setAuthor(String author) {
 		this.author = author;
     }
-    public Long getPrice() {
+    public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(Long price) {
+	public void setPrice(double price) {
 		this.price = price;
     }
     

@@ -1,6 +1,7 @@
 package pq.jdev.b001.bookstore.cart.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Controller;
 
 import pq.jdev.b001.bookstore.books.model.Book;
@@ -9,29 +10,44 @@ import pq.jdev.b001.bookstore.books.service.BookService;
 import pq.jdev.b001.bookstore.cart.dto.CustomerDTO;
 import pq.jdev.b001.bookstore.cart.model.CartInfo;
 import pq.jdev.b001.bookstore.cart.model.CustomerInfo;
+import pq.jdev.b001.bookstore.cart.model.Order;
 import pq.jdev.b001.bookstore.cart.model.OrderInfo;
 import pq.jdev.b001.bookstore.cart.pagination.PaginationResult;
+import pq.jdev.b001.bookstore.cart.repository.CartRepository;
 import pq.jdev.b001.bookstore.cart.service.CartService;
 import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.cart.validator.CustomerDTOValidator;
+import pq.jdev.b001.bookstore.payment.config.PaypalPaymentIntent;
+import pq.jdev.b001.bookstore.payment.config.PaypalPaymentMethod;
+import pq.jdev.b001.bookstore.payment.service.PaypalService;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpServletRequest;
+
+import com.paypal.api.payments.Links;
+import com.paypal.api.payments.Payment;
+import com.paypal.base.rest.PayPalRESTException;
 
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -48,6 +64,14 @@ public class CartController {
 
    @Autowired
    private CustomerDTOValidator customerDTOValidator;
+
+   // @Autowired
+   // private PaypalService paypalService;
+   
+   // private Logger log = LoggerFactory.getLogger(getClass());
+
+   // public static final String URL_PAYPAL_SUCCESS = "pay/success";
+	// public static final String URL_PAYPAL_CANCEL = "pay/cancel";
 
    @InitBinder
    public void myInitBinder(WebDataBinder dataBinder) {
@@ -335,22 +359,39 @@ public class CartController {
       } else if (!cartInfo.isValidCustomer()) {
  
          return "redirect:/checkout";
-      }
+      } 
+
       try {
          cartService.saveOrder(cartInfo);
       } catch (Exception e) {
- 
          return "checkoutComfirmation";
       }
  
       // Remove Cart from Session.
       Utils.removeCartInSession(request);
- 
       // Store last cart.
       Utils.storeLastOrderedCartInSession(request, cartInfo);
  
       return "redirect:/shoppingCartFinalize";
    }
+
+   // @GetMapping(URL_PAYPAL_CANCEL)
+	// public String cancelPay(){
+	// 	return "cancel";
+	// }
+
+   // @GetMapping(URL_PAYPAL_SUCCESS)
+	// public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
+	// 	try {
+	// 		Payment payment = paypalService.executePayment(paymentId, payerId);
+	// 		if(payment.getState().equals("approved")){
+	// 			return "success";
+	// 		}
+	// 	} catch (PayPalRESTException e) {
+	// 		log.error(e.getMessage());
+	// 	}
+	// 	return "redirect:/";
+	// }
  
    @RequestMapping(value = { "/shoppingCartFinalize" }, method = RequestMethod.GET)
    public String shoppingCartFinalize(HttpServletRequest request, Model model, Authentication authentication, ModelMap map) {
@@ -382,26 +423,91 @@ public class CartController {
       return "shoppingCartFinalize";
    }
 
+   @PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/orderList")
+	public String index(Model model, HttpServletRequest request, RedirectAttributes redirect) {
+		request.getSession().setAttribute("listOrder", null);
+
+		if (model.asMap().get("success") != null)
+			redirect.addFlashAttribute("success", model.asMap().get("success").toString());
+		return "redirect:/orderList/page/1";
+   }
+   
    // @RequestMapping(value = { "/admin/orderList" }, method = RequestMethod.GET)
    // public String orderList(Model model, //
    //       @RequestParam(value = "page", defaultValue = "1") String pageStr) {
-   //       int page = 1;
-   //       try {
-   //          page = Integer.parseInt(pageStr);
-   //       } catch (Exception e) {
-   //       }
-   //       final int MAX_RESULT = 5;
-   //       final int MAX_NAVIGATION_PAGE = 10;
-      
-   //       PaginationResult<OrderInfo> paginationResult //
-   //             = cartService.listOrderInfo(page, MAX_RESULT, MAX_NAVIGATION_PAGE);
-       
-   //          model.addAttribute("paginationResult", paginationResult);
-   //    return "orderList";
+   //    int page = 1;
+   //    try {
+   //       page = Integer.parseInt(pageStr);
+   //    } catch (Exception e) {
+   //    }
+   //    final int MAX_RESULT = 5;
+   //    final int MAX_NAVIGATION_PAGE = 10;
+ 
+   //    PaginationResult<OrderInfo> paginationResult //
+   //          = orderDAO.listOrderInfo(page, MAX_RESULT, MAX_NAVIGATION_PAGE);
+ 
+   //    model.addAttribute("paginationResult", paginationResult);
+   //    return "/admin/orderList";
    // }
 
 
+   @PreAuthorize("hasRole('ADMIN')")
+   @GetMapping("/orderList/page/{pageNumber}")
+   public String orderList(HttpServletRequest request, @PathVariable int pageNumber, Model model, ModelMap map, Authentication authentication) {
 
+         if (authentication != null) {
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            List<String> roles = new ArrayList<String>();
+            for (GrantedAuthority a : authorities) {
+               roles.add(a.getAuthority());
+            }
+
+            if (isUser(roles)) {
+               map.addAttribute("header", "header_user");
+               map.addAttribute("footer", "footer_user");
+            } else if (isAdmin(roles)) {
+               map.addAttribute("header", "header_admin");
+               map.addAttribute("footer", "footer_admin");
+            }
+         } else {
+            map.addAttribute("header", "header_login");
+            map.addAttribute("footer", "footer_login");
+         }
+
+         PagedListHolder<?> pages = (PagedListHolder<?>) request.getSession().getAttribute("listOrder");
+         
+         int pagesize = 7;
+         List<Order> list = cartService.findAll();
+         if (pages == null) {
+            pages = new PagedListHolder<>(list);
+            pages.setPageSize(pagesize);
+         } else {
+            final int goToPage = pageNumber - 1;
+            if (goToPage <= pages.getPageCount() && goToPage >= 0) {
+               pages.setPage(goToPage);
+            }
+         }
+         request.getSession().setAttribute("listOrder", pages);
+   
+         int current = pages.getPage() + 1;
+         int begin = Math.max(1, current - list.size());
+         int end = Math.min(begin + 5, pages.getPageCount());
+         int totalPageCount = pages.getPageCount();
+         String baseUrl = "/orderList/page/";
+   
+         model.addAttribute("beginIndex", begin);
+         model.addAttribute("endIndex", end);
+         model.addAttribute("currentIndex", current);
+         model.addAttribute("totalPageCount", totalPageCount);
+         model.addAttribute("baseUrl", baseUrl);
+         model.addAttribute("listOrder", pages);
+
+         CartInfo myCart = Utils.getCartInSession(request);
+			model.addAttribute("cartForm", myCart);
+			model.addAttribute("myCart", myCart);
+      return "orderList";
+   }
 
 
 

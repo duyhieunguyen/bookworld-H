@@ -2,6 +2,8 @@ package pq.jdev.b001.bookstore.cart.service;
 
 import java.util.List;
 
+import org.hibernate.query.Query;
+
 import pq.jdev.b001.bookstore.cart.model.CartInfo;
 import pq.jdev.b001.bookstore.cart.model.Order;
 import pq.jdev.b001.bookstore.cart.model.OrderDetailInfo;
@@ -14,11 +16,15 @@ public interface CartService {
 
     // public OrderInfo getOrderInfo(String orderId);
 
-    int getMaxOrderNum();
+    // int getMaxOrderNum();
 
     Order findOrder(String orderId);
 
     List<OrderDetailInfo> listOrderDetailInfos(String orderId);
 
+    List<Order> findAll();
 
+    // Query<OrderInfo> queryOrderInfo();
+
+    // PaginationResult<OrderInfo> listOrderInfo(int page, int maxResult, int maxNavigationPage);
 }

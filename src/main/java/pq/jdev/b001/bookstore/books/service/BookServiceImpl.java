@@ -62,7 +62,7 @@ public class BookServiceImpl implements BookService {
 	@Autowired
 	private ServletContext context;
 
-	private FileInputStream stream;
+
 
 	/**
 	 * Method checkInput is used to check if user didn't miss any important

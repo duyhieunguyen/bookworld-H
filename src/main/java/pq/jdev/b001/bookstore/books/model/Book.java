@@ -44,7 +44,7 @@ public class Book implements Serializable {
 	
 	@NotNull
 	@Column(name = "PRICE")
-	private Long price;
+	private double price;
 
 	@Column(name = "OK")
 	private int ok;
@@ -101,11 +101,11 @@ public class Book implements Serializable {
 		this.title = title;
 	}
 
-	public long getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(Long price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 

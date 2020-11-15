@@ -97,10 +97,12 @@
                                                                     <a class="btn btn-default" th:href="@{/checkout}">
                                                                         Edit Customer
                                                                     </a>
-                                                                    
+                                                                  
                                                                     <!-- Send/Save -->
-                                                                    <input type="submit" value="Payment" class="btn btn-default" />
-                                                            </form>
+                                                                    <!-- <input type="submit" value="Payment" class="btn btn-default" /> -->
+                                                                </form>
+                                                              
+                                                                
                                                             </div>
                                                             <!-- <div class="col-sm-5">
                                                                 <h3>Create New Account</h3>
@@ -143,6 +145,7 @@
                                                                         </tr>
                                                                       
                                                                     </tbody>
+                                                                   
                                                                     <tfoot>
                                                                         <!-- <tr class="cart-subtotal">
                                                                             <td>Cart Sub Total</td>
@@ -170,6 +173,10 @@
                                                                         </tr>
                                                                     </tfoot>
                                                                 </table>
+                                                                 <form method="post" th:action="@{/pay}">
+                                                                        <input type="text" class="btn btn-default" th:value="${myCart.amountTotal}" name="price" hidden/>
+                                                                        <input type="submit" class="btn btn-default" value="Payment with Paypal"/> 
+                                                                </form>
                                                            
                                                         </div>
                                                     </div>
