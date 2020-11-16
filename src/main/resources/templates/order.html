@@ -90,7 +90,7 @@
                                                     </br>
                                                     <ul style="font-weight:bold; font-size: 20px; list-style-type:none;">
                                                        <li>Total:
-                                                          <span class="total" th:utext="${#numbers.formatDecimal(orderInfo.amount,3,2,'COMMA')}">         
+                                                          <span class="total" th:utext="'$' + ${#numbers.formatDecimal(orderInfo.amount,3,2,'COMMA')}">         
                                                           </span>
                                                        </li>
                                                     </ul>
@@ -108,8 +108,8 @@
                                                        <td th:utext="${orderDetailInfo.bookId}"></td>
                                                        <td th:utext="${orderDetailInfo.title}"></td>
                                                        <td th:utext="${orderDetailInfo.quanity}"></td>
-                                                       <td th:utext="${#numbers.formatDecimal(orderDetailInfo.price,3,2,'COMMA')}"></td>
-                                                       <td th:utext="${#numbers.formatDecimal(orderDetailInfo.amount,3,2,'COMMA')}"></td>
+                                                       <td th:utext="'$' + ${#numbers.formatDecimal(orderDetailInfo.price,3,2,'COMMA')}"></td>
+                                                       <td th:utext="'$' + ${#numbers.formatDecimal(orderDetailInfo.amount,3,2,'COMMA')}"></td>
                                                     </tr>
                                                  </table>
                                             </div>
