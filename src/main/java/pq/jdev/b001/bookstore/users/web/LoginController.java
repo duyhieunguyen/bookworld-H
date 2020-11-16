@@ -56,7 +56,7 @@ public class LoginController {
 
 		PagedListHolder<?> pages = null;
 
-		int pagesize = 6;
+		int pagesize = 10;
 		List<Book> listH = null;
 		if (principal == null) {
 			listH = (List<Book>) listBookService.findAll();
@@ -136,7 +136,7 @@ public class LoginController {
 			Model model, ModelMap map, Principal principal) {
 
 		PagedListHolder<?> pages = null;
-		int pagesize = 6;
+		int pagesize = 10;
 		List<Book> list = null;
 		if (principal == null) {
 			list = (List<Book>) listBookService.findAll();
@@ -288,7 +288,7 @@ public class LoginController {
 					list.add(a);
 		}
 
-		int pagesize = 6;
+		int pagesize = 10;
 
 		pages = new PagedListHolder<>(list);
 		pages.setPageSize(pagesize);
