@@ -684,9 +684,42 @@
 
 <!-- Custom Scripts -->
 <script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script>
-
+    $(document).ready(function () {
+        $('#keywords').autocomplete({
+            minLength: 1,
+            source: function (request, response) {
+                $.ajax({
+                    url: 'BookWorld/search',
+                    method: 'get',
+                    data: { term: request.term },
+                    dataType: 'json',
+                    success: function (data) {
+                        response(data);
+                    },
+                    error: function (err) {
+                        alert(err);
+                    }
+                });
+            },
+            focus: updateTextBox,
+            select: updateTextBox
+        })
+        .autocomplete('instance')._renderItem = function (ul, item) {
+            return $( "<li></li>" )  
+            .data( "item.autocomplete", item )  
+            .append("<img th:src='@{|/bookImage?bookId=${book.id}|}'/> " + item.title)  
+            .appendTo( ul );  
+        };
+        function updateTextBox(event, ui) {
+            var title = ui.item.title;
+            $(this).val(title);
+           return false;
+        }
+    });
 </script>
 
 </html>
