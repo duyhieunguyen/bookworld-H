@@ -526,10 +526,7 @@ public class BookController {
 		}
 	}
 
-	@GetMapping("/search")
-	private @ResponseBody List<UploadInformationDTO> searchAutocomplete(HttpServletRequest request) {
-		return this.bookService.searchAutocomplete(request.getParameter("term"));
-	}
+	
 
 	@RequestMapping(value = { "/bookImage" }, method = RequestMethod.GET)
    public void productImage(HttpServletRequest request, HttpServletResponse response, Model model,

@@ -25,11 +25,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pq.jdev.b001.bookstore.books.model.Book;
 import pq.jdev.b001.bookstore.books.service.BookService;
 import pq.jdev.b001.bookstore.books.service.UploadPathService;
+import pq.jdev.b001.bookstore.books.web.dto.UploadInformationDTO;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.category.service.CategoryService;
 import pq.jdev.b001.bookstore.listbooks.service.ListBookService;
@@ -84,7 +86,7 @@ public class ListBookController {
 
 		PagedListHolder<?> pages = null;
 
-		int pagesize = 6;
+		int pagesize = 10;
 		List<Book> listH = null;
 		if (principal == null) {
 			listH = (List<Book>) listBookService.findAll();
@@ -174,7 +176,7 @@ public class ListBookController {
 		}
 
 		PagedListHolder<?> pages = null;
-		int pagesize = 6;
+		int pagesize = 10;
 		List<Book> list = null;
 		if (principal == null) {
 			list = (List<Book>) listBookService.findAll();
@@ -384,7 +386,7 @@ public class ListBookController {
 //		}
 
 		PagedListHolder<?> pages = null;
-		int pagesize = 6;
+		int pagesize = 10;
 
 		List<Book> listBookGet = null;
 		if (principal == null) {
@@ -456,6 +458,11 @@ public class ListBookController {
 		model.addAttribute("cartForm", cartInfo);
 
 		return "listbook";
+	}
+
+	@GetMapping("/search")
+	private @ResponseBody List<UploadInformationDTO> searchAutocomplete(HttpServletRequest request) {
+		return this.bookService.searchAutocomplete(request.getParameter("term"));
 	}
 
 	private boolean isUser(List<String> roles) {
