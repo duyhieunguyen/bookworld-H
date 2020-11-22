@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.core.userdetails.User;
 
 import pq.jdev.b001.bookstore.books.model.Book;
+import pq.jdev.b001.bookstore.books.model.BookInfo;
 import pq.jdev.b001.bookstore.books.model.SelectCategory;
 import pq.jdev.b001.bookstore.books.web.dto.BookDTO;
 import pq.jdev.b001.bookstore.books.web.dto.UploadInformationDTO;
@@ -41,6 +42,6 @@ public interface BookService {
 	
 	public List<Book> findBookByCategories(Collection<Category> categories);
 
-	// Book findBook(Long bookId);
+	List<UploadInformationDTO> searchAutocomplete(String keyword);
 
 }

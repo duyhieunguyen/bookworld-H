@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import pq.jdev.b001.bookstore.books.model.Book;
+import pq.jdev.b001.bookstore.books.model.BookInfo;
 import pq.jdev.b001.bookstore.books.model.SelectCategory;
 import pq.jdev.b001.bookstore.books.model.Upload;
 import pq.jdev.b001.bookstore.books.repository.BookRepository;
@@ -61,8 +62,6 @@ public class BookServiceImpl implements BookService {
 
 	@Autowired
 	private ServletContext context;
-
-
 
 	/**
 	 * Method checkInput is used to check if user didn't miss any important
@@ -120,10 +119,9 @@ public class BookServiceImpl implements BookService {
 					book.setPicture(image);
 				}
 			}
-			
+
 			/** Save book to get book.id */
 			Book dbBook = bookRepository.save(book);
-			
 
 			/** Upload book's files and handle upload */
 			/** Set upload.uploadedDate */
@@ -365,7 +363,7 @@ public class BookServiceImpl implements BookService {
 				/** Complete handling with upload */
 				editBook.setUploads(dbUpload);
 			}
-			
+
 			/** Set book.categories */
 			Set<Category> categories = new HashSet<Category>();
 			Category t = new Category();
@@ -442,7 +440,7 @@ public class BookServiceImpl implements BookService {
 
 	// @Override
 	// public Book findBook(Long bookId) {
-	// 	return bookRepository.findBook(bookId);
+	// return bookRepository.findBook(bookId);
 	// }
 
 	@Override
@@ -454,11 +452,11 @@ public class BookServiceImpl implements BookService {
 		List<Book> lb = findBookByCategories(categoryCollection);
 		for (Book b : lb) {
 			List<Category> lc = categoryRepository.findCategoryByIdBook(b.getId());
-			for (Category c : lc){
+			for (Category c : lc) {
 				if (c.getId() != idFrom)
 					categorySet.add(c);
 			}
-			if (categorySet==null)
+			if (categorySet == null)
 				categorySet.add(cateTo);
 			Book book = bookRepository.findByid(b.getId());
 			book.setCategories(categorySet);
@@ -466,6 +464,12 @@ public class BookServiceImpl implements BookService {
 			bookRepository.save(book);
 			categorySet = new HashSet<Category>();
 		}
+	}
+
+	@Override
+	public List<UploadInformationDTO> searchAutocomplete(String keyword) {
+		List<UploadInformationDTO> query =  bookRepository.listUploadInformation(keyword);
+		return query;
 	}
 
 }

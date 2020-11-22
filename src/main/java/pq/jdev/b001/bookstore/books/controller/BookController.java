@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pq.jdev.b001.bookstore.books.model.Book;
@@ -523,6 +524,11 @@ public class BookController {
 			}
 			return "bookview/error";
 		}
+	}
+
+	@GetMapping("/search")
+	private @ResponseBody List<UploadInformationDTO> searchAutocomplete(HttpServletRequest request) {
+		return this.bookService.searchAutocomplete(request.getParameter("term"));
 	}
 
 	@RequestMapping(value = { "/bookImage" }, method = RequestMethod.GET)

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import pq.jdev.b001.bookstore.books.model.Book;
+import pq.jdev.b001.bookstore.books.web.dto.UploadInformationDTO;
 import pq.jdev.b001.bookstore.category.model.Category;
 import pq.jdev.b001.bookstore.publishers.model.Publishers;
 import pq.jdev.b001.bookstore.users.model.Person;
@@ -80,5 +81,8 @@ public interface BookRepository extends CrudRepository<Book, Long>, JpaRepositor
 
 	@Query("SELECT e FROM Book e WHERE e.id =:bookId ")
 	public void findBook(@Param("bookId") Long bookId);
+
+	@Query("SELECT new pq.jdev.b001.bookstore.books.web.dto.UploadInformationDTO (b.title, b.picture) FROM Book b WHERE b.title LIKE %:keyword%")
+    List<UploadInformationDTO> listUploadInformation(@Param("keyword") String keyword);
 
 }

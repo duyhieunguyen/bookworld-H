@@ -26,7 +26,6 @@
     <!-- Stylesheet -->
     <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css" />
 
-
 </head>
 
 <body>
@@ -143,9 +142,9 @@
                             <figure>
                                 <!-- <img th:src="@{'/img/bookscover/'+${contactB.picture}}" th:if="${contactB.picture != null}"
                                     style="width: 355px; height: 266px;" alt="New Releaase" /> -->
-                                    <img th:src="@{|/bookImage?bookId=${contactB.id}|}" style="width: 355px; height: 266px;" th:if="${contactB.picture != null}" />
+                                    <img th:src="@{|/bookImage?bookId=${contactB.id}|}" style="max-width: 100%; height: 395px;" accept="image/*"  th:if="${contactB.picture != null}" />
                                     <img th:src="@{/images/lol1.gif}" th:if="${contactB.picture == null}"
-                                    style="width: 355px; height: 266px;" />
+                                    style="max-width: 100%; height: 266px;" />
                                 <!-- <img th:src="*{'data:image/jpg;base64,'+ book.getPicture()}" alt="#" /> -->
 
                                 <figcaption class="bg-orange">
@@ -685,9 +684,42 @@
 
 <!-- Custom Scripts -->
 <script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script>
-
+    $(document).ready(function () {
+        $('#keywords').autocomplete({
+            minLength: 1,
+            source: function (request, response) {
+                $.ajax({
+                    url: 'BookWorld/search',
+                    method: 'get',
+                    data: { term: request.term },
+                    dataType: 'json',
+                    success: function (data) {
+                        response(data);
+                    },
+                    error: function (err) {
+                        alert(err);
+                    }
+                });
+            },
+            focus: updateTextBox,
+            select: updateTextBox
+        })
+        .autocomplete('instance')._renderItem = function (ul, item) {
+            return $( "<li></li>" )  
+            .data( "item.autocomplete", item )  
+            .append("<img th:src='@{|/bookImage?bookId=${book.id}|}'/> " + item.title)  
+            .appendTo( ul );  
+        };
+        function updateTextBox(event, ui) {
+            var title = ui.item.title;
+            $(this).val(title);
+           return false;
+        }
+    });
 </script>
 
 </html>
