@@ -197,4 +197,11 @@ public class Book implements Serializable {
 		this.description = description;
 	}
 	
+	public String getCategoriesToString() {
+		String text = "";
+		for (Category cate : categories) {
+			text += " " + cate.getId();
+		}
+		return text;
+	}
 }
