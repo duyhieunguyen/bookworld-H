@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.google.gson.Gson;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -460,9 +462,13 @@ public class ListBookController {
 		return "listbook";
 	}
 
-	@GetMapping("/search")
-	private @ResponseBody List<UploadInformationDTO> searchAutocomplete(HttpServletRequest request) {
+	@GetMapping("/searchAutocomplete")
+	// @RequestMapping(value="/searchAutocomplete")
+	@ResponseBody
+	public List<UploadInformationDTO> searchAutocomplete(HttpServletRequest request) {
+		// System.out.println("Term ====>" + term);
 		return this.bookService.searchAutocomplete(request.getParameter("term"));
+		 
 	}
 
 	private boolean isUser(List<String> roles) {

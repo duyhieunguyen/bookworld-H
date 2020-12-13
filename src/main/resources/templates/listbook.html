@@ -350,7 +350,7 @@
             minLength: 1,
             source: function (request, response) {
                 $.ajax({
-                    url: 'BookWorld/search',
+                    url: '/searchAutocomplete',
                     method: 'get',
                     data: { term: request.term },
                     dataType: 'json',
@@ -366,7 +366,7 @@
             select: updateTextBox
         })
         .autocomplete('instance')._renderItem = function (ul, item) {
-            return $( "<li></li>" )  
+            return $( "<li style='list-style-type: none; color: red; background-color: white;'></li>" )  
             .data( "item.autocomplete", item )  
             .append("<img th:src='@{|/bookImage?bookId=${book.id}|}'/> " + item.title)  
             .appendTo( ul );  
@@ -379,4 +379,18 @@
     });
 </script>
 
+<!-- <script>
+    $(document).ready(function () {
+        $('#keywords').autocomplete({
+            source: "/searchAutocomplete", 
+				minLength: 3,
+				select: function(event, ui) {
+					this.value = ui.item.label;
+					$("#keywords").val(ui.item.value);
+					return false;
+				}
+        })
+        
+    });
+</script> -->
 </html>
