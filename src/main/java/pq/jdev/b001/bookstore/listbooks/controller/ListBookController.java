@@ -466,7 +466,9 @@ public class ListBookController {
 	// @RequestMapping(value="/searchAutocomplete")
 	@ResponseBody
 	public List<UploadInformationDTO> searchAutocomplete(HttpServletRequest request) {
-		// System.out.println("Term ====>" + term);
+		
+		// Gson gson = new Gson();
+		// System.out.println("Term ====>" + gson.toJson(request.getParameter("term")));
 		return this.bookService.searchAutocomplete(request.getParameter("term"));
 		 
 	}

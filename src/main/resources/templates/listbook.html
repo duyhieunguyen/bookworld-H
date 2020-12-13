@@ -26,6 +26,14 @@
     <!-- Stylesheet -->
     <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css" />
 
+    
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <link th:href="@{/css/search.css}" rel="stylesheet" type="text/css" />
+    
 </head>
 
 <body>
@@ -57,8 +65,8 @@
                 <h3>What are you looking for at the library?</h3>
                 <form th:action="@{/book/search/1}" method="get" >
                     <div class="col-md-4 col-sm-6">
-                        <div class="form-group">
-                            <label class="sr-only" >Search by Keyword</label>
+                        <div class="form-group ui-widget">
+                            <label class="sr-only">Search by Keyword</label>
                             <input class="form-control" placeholder="Search by Keyword" id="keywords" name="s"
                                 type="text">
                         </div>
@@ -341,11 +349,12 @@
 <!-- Custom Scripts -->
 <script type="text/javascript" th:src="@{/js/main.js}"></script>
 
-<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
 <script>
+   
+    
     $(document).ready(function () {
+        
         $('#keywords').autocomplete({
             minLength: 1,
             source: function (request, response) {
@@ -356,6 +365,7 @@
                     dataType: 'json',
                     success: function (data) {
                         response(data);
+                        console.log(data);
                     },
                     error: function (err) {
                         alert(err);
@@ -365,10 +375,15 @@
             focus: updateTextBox,
             select: updateTextBox
         })
+       
         .autocomplete('instance')._renderItem = function (ul, item) {
-            return $( "<li style='list-style-type: none; color: red; background-color: white;'></li>" )  
+            return $("<li></li>" )  
             .data( "item.autocomplete", item )  
-            .append("<img th:src='@{|/bookImage?bookId=${book.id}|}'/> " + item.title)  
+            .append(
+            `<li style="font-weight: bold; border: none; padding: 10px;">` +    
+            `<img src='/bookImage?bookId=${item.bookId}' accept='image/*'/>` + '' + item.title + 
+            `</li>`) 
+             
             .appendTo( ul );  
         };
         function updateTextBox(event, ui) {

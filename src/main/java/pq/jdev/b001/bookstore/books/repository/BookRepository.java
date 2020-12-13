@@ -82,7 +82,7 @@ public interface BookRepository extends CrudRepository<Book, Long>, JpaRepositor
 	@Query("SELECT e FROM Book e WHERE e.id =:bookId ")
 	public void findBook(@Param("bookId") Long bookId);
 
-	@Query("SELECT new pq.jdev.b001.bookstore.books.web.dto.UploadInformationDTO (b.title, b.picture) FROM Book b WHERE b.title LIKE %:keyword%")
+	@Query("SELECT new pq.jdev.b001.bookstore.books.web.dto.UploadInformationDTO (b.id, b.title, b.picture) FROM Book b WHERE b.title LIKE %:keyword%")
     List<UploadInformationDTO> listUploadInformation(@Param("keyword") String keyword);
 
 }

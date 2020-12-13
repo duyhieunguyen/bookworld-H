@@ -58,8 +58,8 @@ public class UploadInformationDTO {
     }
  
     // Using for JPA/Hibernate Query.
-    public UploadInformationDTO(String title, byte[] picture) {
-        
+    public UploadInformationDTO(Long bookId, String title, byte[] picture) {
+        this.bookId = bookId;
         this.title = title;
 		this.picture = picture;
       
