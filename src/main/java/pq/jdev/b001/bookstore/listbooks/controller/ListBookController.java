@@ -354,7 +354,7 @@ public class ListBookController {
 	}
 
 	@GetMapping("/book/search/{pageNumber}")
-	public String search(@RequestParam("s") String s, Authentication authentication, Model model,
+	public String search(@RequestParam("s") String s, @RequestParam("category") String category, Authentication authentication, Model model,
 			HttpServletRequest request, @PathVariable int pageNumber, ModelMap map, Principal principal) {
 
 		if (authentication != null) {

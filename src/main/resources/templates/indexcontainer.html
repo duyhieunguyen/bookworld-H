@@ -29,6 +29,12 @@
  <script th:src="@{/js/html5shiv.min.js}"></script>
  <script th:src="@{/js/respond.min.js}"></script>
  <![endif]-->
+
+ 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <link th:href="@{/css/search.css}" rel="stylesheet" type="text/css" />
 </head>
 <body>
 	<nav th:replace="header :: ${header}" ></nav>
@@ -113,43 +119,45 @@
 		<div class="container">
 			<div class="filter-box">
 				<h3>What are you looking for at the library?</h3>
-				<form action="http://libraria.demo.presstigers.com/index.html" th:action="@{/search/1}" method="get">
-					<div class="col-md-4 col-sm-6">
-						<div class="form-group">
-							<label class="sr-only">Search by Keyword</label>
-							<input class="form-control" placeholder="Search by Keyword" id="keywords" name="s" type="text">
-						</div>
-					</div>
-					<div class="col-md-3 col-sm-6">
-						<div class="form-group">
-							<select name="catalog" id="catalog" class="form-control">
-								<option>Search the Catalog</option>
-								<option>Catalog 01</option>
-								<option>Catalog 02</option>
-								<option>Catalog 03</option>
-								<option>Catalog 04</option>
-								<option>Catalog 05</option>
-							</select>
-						</div>
-					</div>
-					<div class="col-md-3 col-sm-6">
-						<div class="form-group">
-							<select name="category" id="category" class="form-control">
-								<option>All Categories</option>
-								<option>Category 01</option>
-								<option>Category 02</option>
-								<option>Category 03</option>
-								<option>Category 04</option>
-								<option>Category 05</option>
-							</select>
-						</div>
-					</div>
-					<div class="col-md-2 col-sm-6">
-						<div class="form-group">
-							<input class="form-control" type="submit" value="Search">
-						</div>
-					</div>
-				</form>
+				<form th:action="@{/book/search/1}" method="get" >
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group ui-widget">
+                            <label class="sr-only">Search by Keyword</label>
+                            <input class="form-control" placeholder="Search by Keyword" id="keywords" name="s"
+                                type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="form-group">
+                            <select name="category" id="catalog" class="form-control">
+                                <option>All Categories</option>
+                                <th:block th:each="contact, iterStar : ${categories.pageList}">
+                                    <option th:text="${contact.name}"></option>
+                                </th:block>
+                                
+                                
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="col-md-3 col-sm-6">
+                        <div class="form-group">
+                            <select name="category" id="category" class="form-control">
+                                <option>All Categories</option>
+                                <option>Category 01</option>
+                                <option>Category 02</option>
+                                <option>Category 03</option>
+                                <option>Category 04</option>
+                                <option>Category 05</option>
+                            </select>
+                        </div>
+                    </div> -->
+                    <div class="col-md-2 col-sm-6">
+                        <div class="form-group">
+                            <input class="form-control" type="submit" value="Search"/>
+                        </div>
+                    </div>
+                </form>
 			</div>
 		</div>
 	</section>
@@ -1166,7 +1174,11 @@
 	
 	<!-- Custom Scripts -->
 	<script type="text/javascript" th:src="@{/js/main.js}"></script>
-	
-</body>
 
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<script type="text/javascript" th:src="@{/js/search.js}"> </script>
+   
+
+</body>
 </html>
