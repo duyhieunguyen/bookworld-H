@@ -96,7 +96,7 @@
                                                             <table class="table table-bordered shop_table cart">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th class="product-name"> <input type="checkbox"/></th>
+                                                                        <th class="product-name"> <input type="checkbox" onclick="selectAllCheckboxes(this,'inputId')" id="inputIdOne" styleClass="classIdOne"/></th>
                                                                         <th class="product-name">Title</th>
                                                                         <th class="product-quantity">Quantity</th>
                                                                         <th class="product-name">Action </th>                                                                
@@ -107,7 +107,7 @@
                                                                     <tr class="cart_item" th:each="cartLineInfo, varStatus : ${cartForm.cartLines}">
                                                                         <td data-title="cbox" class="product-cbox">
                                                                             <span>
-                                                                                <input type="checkbox" id="cbox3"  th:name="|cartLines[${varStatus.index}].bookInfo.bookId|"                       
+                                                                                <input type="checkbox" id="inputId" onclick="checkOne(this,'inputIdOne')"  class="classCheckBox" th:name="|cartLines[${varStatus.index}].bookInfo.bookId|"                       
                                                                                 th:value="${cartLineInfo.bookInfo.bookId}">
                                                                             </span>
                                                                         </td>
@@ -144,7 +144,7 @@
                                                                                 <a href="#" data-toggle="dropdown" class="dropdown-toggle">Edit Hold<b class="caret"></b></a>
                                                                                 <ul class="dropdown-menu">
                                                                                     <!-- <li> <a><input type="submit" value="Update Quantity"/></a></li> -->
-                                                                                    <li><a th:href="@{/checkout}">CHECKOUT</a></li>
+                                                                                    <li><a th:href="@{/checkout}" onclick="checkOut();">CHECKOUT</a></li>
                                                                                     <li><a th:href="@{/book}">CONTINUE BUY</a></li>
                                                                                 </ul>
                                                                             </div>
@@ -270,5 +270,31 @@
 <!-- Custom Scripts -->
 <script type="text/javascript" th:src="@{/js/main.js}"></script>
 
+<script>
+    function selectAllCheckboxes(obj, InputID) {
+        var inputCheckBox = document.getElementsByTagName("input");
+        for (var i = 0; i < inputCheckBox.length; i++) {
+            if (inputCheckBox[i].id.indexOf(InputID) != -1) {
+                inputCheckBox[i].checked = obj.checked;
+            }
+        }
+    }
+
+    function checkOne(obj, inputIdOne) {
+
+        var inputCheckBox = document.querySelector('[id$="inputIdOne"]')
+        var inputCheckBoxSmall = document.getElementsByClassName("classCheckBox");
+        var result = true;
+        for (var i = 0; i < inputCheckBoxSmall.length; i++) {
+            if (inputCheckBoxSmall[i].checked == false) {
+                result = false;
+                break;
+            }
+        }
+        inputCheckBox.checked = result;
+    }
+
+    
+</script>
 
 </html>
