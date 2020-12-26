@@ -472,6 +472,7 @@ public class CartController {
       model.addAttribute("myCart", myCart);
       return "orderList";
    }
+   
 
    @RequestMapping({ "/orderRemove" })
    public String removeOrderHandler(HttpServletRequest request, Model model,
@@ -483,21 +484,38 @@ public class CartController {
       return "redirect:/orderList";
    }
 
-   // // tao list order
-	// @ModelAttribute("list")
-	// public List<Order> getList(Person p) {
-	// 	List<Order> oldList = cartService.findAll();
-	// 	List<Order> newList = new ArrayList<Order>();
-	// 	Long id = p.getId();
-	// 	for (Order o : oldList) {
-	// 		o.setOk(0);
-	// 		if (o.getPerson().getId() == id)
-	// 			o.setOk(1);
+   @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+   @GetMapping("/statistis")
+   public String staTisTis(HttpServletRequest request, Model model, ModelMap map,
+         Authentication authentication) {
 
-	// 		newList.add(o);
-	// 	}
-	// 	return newList;
-	// }
+      if (authentication != null) {
+         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+         List<String> roles = new ArrayList<String>();
+         for (GrantedAuthority a : authorities) {
+            roles.add(a.getAuthority());
+         }
+
+         if (isUser(roles)) {
+            map.addAttribute("header", "header_user");
+            map.addAttribute("footer", "footer_user");
+            map.addAttribute("ok", "FALSE");
+         } else if (isAdmin(roles)) {
+            map.addAttribute("header", "header_admin");
+            map.addAttribute("footer", "footer_admin");
+            map.addAttribute("ok", "TRUE");
+         }
+      } else {
+         map.addAttribute("header", "header_login");
+         map.addAttribute("footer", "footer_login");
+         map.addAttribute("ok", "FALSE");
+      }
+
+      CartInfo myCart = Utils.getCartInSession(request);
+      model.addAttribute("cartForm", myCart);
+      model.addAttribute("myCart", myCart);
+      return "statistis";
+   }
 
    // @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
    @RequestMapping(value = { "/order" }, method = RequestMethod.GET)
