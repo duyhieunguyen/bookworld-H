@@ -18,20 +18,28 @@ import pq.jdev.b001.bookstore.cart.repository.CartRepository;
 import pq.jdev.b001.bookstore.cart.service.CartService;
 import pq.jdev.b001.bookstore.cart.utils.Utils;
 import pq.jdev.b001.bookstore.cart.validator.CustomerDTOValidator;
+import pq.jdev.b001.bookstore.export.OrderExcelExporter;
+import pq.jdev.b001.bookstore.export.OrderPDFExporter;
 import pq.jdev.b001.bookstore.payment.config.PaypalPaymentIntent;
 import pq.jdev.b001.bookstore.payment.config.PaypalPaymentMethod;
 import pq.jdev.b001.bookstore.payment.service.PaypalService;
 import pq.jdev.b001.bookstore.users.model.Person;
 
 import java.util.List;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.lowagie.text.DocumentException;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
@@ -559,20 +567,36 @@ public class CartController {
       return "order";
    }
 
-   // @RequestMapping(value = { "/bookImage" }, method = RequestMethod.GET)
-   // public void productImage(HttpServletRequest request, HttpServletResponse
-   // response, Model model,
-   // @RequestParam("bookId") Long bookId) throws IOException {
-   // Book book = null;
-   // if (bookId != null) {
-   // book = this.bookService.findBookByID(bookId);
-   // }
-   // if (book != null && book.getPicture() != null) {
-   // response.setContentType("images/jpeg, images/jpg, images/png, images/gif");
-   // response.getOutputStream().write(book.getPicture());
-   // }
-   // response.getOutputStream().close();
-   // }
+   @GetMapping("/order/export/excel")
+    public void exportToExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/octet-stream");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Orders_" + currentDateTime + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+        List<Order> listOrders = cartService.findAll();
+        OrderExcelExporter excelExporter = new OrderExcelExporter(listOrders);
+        excelExporter.export(response);   
+        
+    }  
+
+    @GetMapping("/order/export/pdf")
+    public void exportToPDF(HttpServletResponse response) throws DocumentException, IOException {
+        response.setContentType("application/pdf");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+         
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Orders_" + currentDateTime + ".pdf";
+        response.setHeader(headerKey, headerValue);
+         
+        List<Order> listOrders = cartService.findAll();
+         
+        OrderPDFExporter exporter = new OrderPDFExporter(listOrders);
+        exporter.export(response);
+         
+    }
 
    private boolean isUser(List<String> roles) {
       if (roles.contains("ROLE_EMPLOYEE")) {

@@ -73,25 +73,32 @@
 
     <div class="row">
        
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <div class="row">
                     <a th:href="@{/statistis}" class="btn btn-default"
                         style="font-size: 12pt; float: left; padding: 5px 20px 5px 20px;">STATISTIS</a>
                 </div>
             </div>
 
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <input autocomplete="on" type="text" class="form-control" name="keyword" id="key"
                     placeholder="Search" style="border-color: #b4adab; height:40px;"/>
             </div>
             
-            
-
-
-        
-  
-    </div>
-    </br>
+            <div class="col-sm-3">
+                <div class="dropdown" >
+                    <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">
+                       EXPORT
+                      </button>
+                    <ul class="dropdown-menu">
+                        
+                        <li><a th:href="@{/order/export/excel}">EXPORT EXCEL</a></li>
+                        <li> <a th:href="@{/order/export/pdf}" >EXPORT PDF</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </br>
     <div class="row" >
         <h3 th:text="'Total Order Count: ' + ${#lists.size(listOrder.pageList)}" ></h3>
         </br>
